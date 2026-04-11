@@ -6,6 +6,8 @@ categories:
 tags:
   - Jekyll
   - update
+header:
+  teaser: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&q=80"
 ---
 
 You'll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
