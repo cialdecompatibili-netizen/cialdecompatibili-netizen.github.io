@@ -120,20 +120,20 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           </div>
           <div id="quill-box">
             <div class="vis-toolbar">
-              <button onclick="fmt('bold')" title="Grassetto"><b>B</b></button>
-              <button onclick="fmt('italic')" title="Corsivo"><i>I</i></button>
-              <button onclick="fmt('underline')" title="Sottolineato"><u>U</u></button>
-              <button onclick="fmt('strikeThrough')" title="Barrato"><s>S</s></button>
+              <button onmousedown="event.preventDefault()" onclick="fmt('bold')" title="Grassetto"><b>B</b></button>
+              <button onmousedown="event.preventDefault()" onclick="fmt('italic')" title="Corsivo"><i>I</i></button>
+              <button onmousedown="event.preventDefault()" onclick="fmt('underline')" title="Sottolineato"><u>U</u></button>
+              <button onmousedown="event.preventDefault()" onclick="fmt('strikeThrough')" title="Barrato"><s>S</s></button>
               <div class="sep"></div>
-              <button onclick="fmtBlock('h2')" title="Titolo">H2</button>
-              <button onclick="fmtBlock('h3')" title="Sottotitolo">H3</button>
-              <button onclick="fmtBlock('p')" title="Paragrafo">¶</button>
+              <button onmousedown="event.preventDefault()" onclick="fmtBlock('h2')" title="Titolo">H2</button>
+              <button onmousedown="event.preventDefault()" onclick="fmtBlock('h3')" title="Sottotitolo">H3</button>
+              <button onmousedown="event.preventDefault()" onclick="fmtBlock('p')" title="Paragrafo">¶</button>
               <div class="sep"></div>
-              <button onclick="fmt('insertUnorderedList')" title="Lista">• Lista</button>
-              <button onclick="fmt('insertOrderedList')" title="Lista numerata">1. Lista</button>
+              <button onmousedown="event.preventDefault()" onclick="fmt('insertUnorderedList')" title="Lista">• Lista</button>
+              <button onmousedown="event.preventDefault()" onclick="fmt('insertOrderedList')" title="Lista numerata">1. Lista</button>
               <div class="sep"></div>
-              <button onclick="inserisciLink()" title="Link">🔗</button>
-              <button onclick="fmt('removeFormat')" title="Rimuovi formattazione">✕ fmt</button>
+              <button onmousedown="event.preventDefault()" onclick="inserisciLink()" title="Link">🔗</button>
+              <button onmousedown="event.preventDefault()" onclick="fmt('removeFormat')" title="Rimuovi formattazione">✕ fmt</button>
             </div>
             <div id="vis-editor" class="vis-editor" contenteditable="true" spellcheck="true"></div>
           </div>
@@ -538,7 +538,7 @@ async function uploadImmagine(input){
   reader.readAsDataURL(file);
 }
 
-(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
+function slugify(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
 function nuovoArticolo(){
   ['titolo','excerpt','teaser','tags','corpo'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('categorie').value='';
