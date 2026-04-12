@@ -60,11 +60,6 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 .editor-toggle button.active{background:#6c63ff;color:white;border-color:#6c63ff}
 #quill-box .ql-toolbar{border-radius:7px 7px 0 0;border-color:#e8e8e8}
 #quill-box .ql-container{border-radius:0 0 7px 7px;border-color:#e8e8e8;min-height:260px;font-size:14px;line-height:1.8}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
-.stat-box{background:white;border-radius:10px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);text-align:center}
-.stat-num{font-size:32px;font-weight:800;color:#6c63ff}
-.stat-label{font-size:11px;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-top:2px}
-.quick-links{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
 </style>
 </head>
 <body>
@@ -76,10 +71,8 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 
 <div class="layout">
   <nav class="sidebar">
-    <div class="nav-label">Generale</div>
-    <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">🏠</span>Dashboard</button>
     <div class="nav-label">Contenuti</div>
-    <button class="nav-item" onclick="showPage('articoli',this)"><span class="icon">📝</span>Articoli</button>
+    <button class="nav-item active" onclick="showPage('articoli',this)"><span class="icon">📝</span>Articoli</button>
     <button class="nav-item" onclick="showPage('pagine',this)"><span class="icon">📄</span>Pagine</button>
     <div class="nav-label">Impostazioni</div>
     <button class="nav-item" onclick="showPage('menu',this)"><span class="icon">🧭</span>Menu</button>
@@ -89,27 +82,8 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 
   <main class="main">
 
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-title">🏠 Dashboard</div>
-      <div class="stat-grid">
-        <div class="stat-box"><div class="stat-num" id="stat-art">—</div><div class="stat-label">Articoli</div></div>
-        <div class="stat-box"><div class="stat-num" id="stat-pag">—</div><div class="stat-label">Pagine</div></div>
-        <div class="stat-box"><div class="stat-num" id="stat-cat">—</div><div class="stat-label">Categorie</div></div>
-      </div>
-      <div class="quick-links">
-        <button class="btn btn-primary" onclick="showPageById('articoli')">✚ Nuovo articolo</button>
-        <button class="btn btn-secondary" onclick="showPageById('menu')">🧭 Menu</button>
-        <a href="https://cialdecompatibili-netizen.github.io/" target="_blank" class="btn btn-secondary">🌐 Vai al sito</a>
-      </div>
-      <div class="card">
-        <div class="card-title">Ultimi articoli pubblicati</div>
-        <div id="dash-ultimi"><span style="color:#bbb;font-size:13px">⏳ Caricamento...</span></div>
-      </div>
-    </div>
-
     <!-- ARTICOLI -->
-    <div class="page" id="page-articoli">
+    <div class="page active" id="page-articoli">
       <div class="page-title">📝 Articoli</div>
       <div class="card">
         <div class="card-title">Nuovo / Modifica articolo</div>
@@ -236,7 +210,7 @@ let _categorie=[];let _catSha=null;
 let _menuVoci=[];let _menuSha=null;
 let _paginaPath='';let _paginaSha='';
 
-// EDITOR
+// EDITOR TOGGLE
 let quill=null;let _editorMode='visuale';
 function initQuill(){
   if(quill)return;
@@ -300,35 +274,6 @@ function showPage(id,btn){
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   btn.classList.add('active');
-}
-function showPageById(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(b=>{
-    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active');
-  });
-}
-
-// DASHBOARD
-async function caricaDashboard(){
-  try{
-    const rp=await ghGet('_posts');
-    if(rp.ok){const d=await rp.json();document.getElementById('stat-art').textContent=Array.isArray(d)?d.length:0;}
-    const rpg=await ghGet('_pages');
-    if(rpg.ok){const d=await rpg.json();document.getElementById('stat-pag').textContent=Array.isArray(d)?d.length:0;}
-    document.getElementById('stat-cat').textContent=_categorie.length||'—';
-    const rp2=await ghGet('_posts');
-    if(rp2.ok){
-      const d=await rp2.json();
-      const ul=d.reverse().slice(0,5);
-      document.getElementById('dash-ultimi').innerHTML=ul.length?ul.map(f=>`
-        <div class="list-row">
-          <span>${f.name.replace(/\.md$/,'').replace(/^\d{4}-\d{2}-\d{2}-/,'').replace(/-/g,' ')}</span>
-          <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}');showPageById('articoli')">✏️ Modifica</button>
-        </div>`).join(''):'<span style="color:#bbb;font-size:13px">Nessun articolo</span>';
-    }
-  }catch(e){console.error(e);}
 }
 
 // TOKEN
@@ -526,7 +471,6 @@ async function modificaArticolo(path){
   const tagsM=(fm?fm[1]:'').match(/tags:\n([\s\S]*?)(?=\n\w|\n---)/);
   if(tagsM)document.getElementById('tags').value=tagsM[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
   document.getElementById('corpo').value=body;
-  if(quill)quill.root.innerHTML=mdToHtml(body);
   window._editSha=data.sha;window._editPath=path;
   showMsg('msg-art','✏️ Articolo caricato — modifica e pubblica.','ok');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -535,7 +479,7 @@ async function pubblica(){
   if(!tok())return showMsg('msg-art','⚠️ Token mancante!','err');
   const titolo=document.getElementById('titolo').value.trim();
   const cat=document.getElementById('categorie').value;
-  const corpo=getCorpo();
+  const corpo=document.getElementById('corpo').value.trim();
   if(!titolo)return showMsg('msg-art','⚠️ Inserisci un titolo!','err');
   if(!cat)return showMsg('msg-art','⚠️ Seleziona una categoria!','err');
   if(!corpo)return showMsg('msg-art','⚠️ Scrivi il contenuto!','err');
@@ -557,9 +501,7 @@ window.onload=function(){
   if(tok()){
     document.getElementById('token-input').value=tok();
     document.getElementById('token-input').placeholder='✅ Token presente';
-    caricaCategorie().then(()=>{
-      caricaDashboard();
-    });
+    caricaCategorie();
     caricaLista();
     caricaPagine();
     caricaMenu();
