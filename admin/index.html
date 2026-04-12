@@ -514,14 +514,17 @@ async function uploadImmagine(input){
     const base64=e.target.result.split(',')[1];
     const nome=file.name.replace(/[^a-zA-Z0-9._-]/g,'-').toLowerCase();
     const path=`assets/images/${nome}`;
-    // controlla se esiste già (per avere lo sha)
     let sha=null;
-    const check=await ghGet(path);
-    if(check.ok){const d=await check.json();sha=d.sha;}
+    try{
+      const check=await ghGet(path);
+      if(check.ok){const d=await check.json();if(d&&typeof d.sha==='string')sha=d.sha;}
+    }catch(err){}
+    const payload={message:`Upload immagine: ${nome}`,content:base64};
+    if(sha)payload.sha=sha;
     const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{
       method:'PUT',
       headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},
-      body:JSON.stringify({message:`Upload immagine: ${nome}`,content:base64,...(sha?{sha}:{})})
+      body:JSON.stringify(payload)
     });
     document.getElementById('upload-progress').style.display='none';
     if(res.ok){
@@ -530,7 +533,7 @@ async function uploadImmagine(input){
       document.getElementById('upload-preview-img').src=e.target.result;
       document.getElementById('upload-preview').style.display='block';
       showMsg('msg-art',`✅ Immagine caricata: ${url}`,'ok');
-    } else {
+    }else{
       const j=await res.json();
       showMsg('msg-art','❌ Upload fallito: '+j.message,'err');
     }
@@ -605,7 +608,7 @@ async function pubblica(){
   if(!tok())return showMsg('msg-art','⚠️ Token mancante!','err');
   const titolo=document.getElementById('titolo').value.trim();
   const cat=document.getElementById('categorie').value;
-  const corpo=document.getElementById('corpo').value.trim();
+  const corpo=getCorpo();
   if(!titolo)return showMsg('msg-art','⚠️ Inserisci un titolo!','err');
   if(!cat)return showMsg('msg-art','⚠️ Seleziona una categoria!','err');
   if(!corpo)return showMsg('msg-art','⚠️ Scrivi il contenuto!','err');
