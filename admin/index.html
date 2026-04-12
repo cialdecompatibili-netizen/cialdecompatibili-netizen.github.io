@@ -21,6 +21,7 @@ label{display:block;font-size:13px;font-weight:500;color:#444;margin-bottom:5px}
 input[type=text],input[type=date],input[type=password],select,textarea{width:100%;padding:9px 12px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;font-family:inherit;background:#fafafa;transition:border .15s;color:#222}
 input:focus,select:focus,textarea:focus{outline:none;border-color:#6c63ff;background:#fff}
 textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13px;line-height:1.8;resize:vertical}
+textarea.page-editor{min-height:240px;font-family:'Courier New',monospace;font-size:13px;line-height:1.8;resize:vertical}
 .hint{font-size:11px;color:#aaa;margin-top:3px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
@@ -28,6 +29,7 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
 .btn-secondary{background:#f0f0f0;color:#444}.btn-secondary:hover{background:#e5e5e5}
 .btn-sm{padding:7px 14px;font-size:12px}
 .btn-danger{background:#fde8e8;color:#c0392b}.btn-danger:hover{background:#fbd0d0}
+.btn-green{background:#e6f9f0;color:#1a7a4a}.btn-green:hover{background:#d0f0e0}
 .actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 #msg{font-size:13px;padding:8px 14px;border-radius:8px;display:none}
 #msg.ok{background:#e6f9f0;color:#1a7a4a;display:block}
@@ -40,7 +42,6 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
 .token-status{font-size:12px;color:#92400e;font-weight:500}
 .token-link{font-size:12px;color:#6c63ff;text-decoration:none;margin-left:auto}
 .token-saved{font-size:12px;color:#1a7a4a;background:#e6f9f0;padding:4px 10px;border-radius:6px;font-weight:500}
-/* Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:white;border-radius:14px;padding:28px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.2)}
@@ -48,8 +49,18 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
 .cat-item{background:#f8f8ff;border:1px solid #e8e8ff;border-radius:10px;padding:14px;margin-bottom:10px}
 .cat-item-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
 .cat-item-row input{margin:0}
-.cat-desc-row input{font-size:12px;color:#666;background:#fff}
-.cat-badge{font-size:10px;background:#6c63ff;color:white;padding:2px 8px;border-radius:10px;margin-left:6px}
+.menu-item{background:#f8fff8;border:1px solid #d0efd0;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.menu-item input{margin:0;flex:1}
+.menu-item .url-input{font-size:12px;color:#555}
+.tab-bar{display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid #eee;padding-bottom:0}
+.tab{padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#aaa;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab.active{color:#6c63ff;border-bottom-color:#6c63ff}
+.tab-content{display:none}.tab-content.active{display:block}
+.page-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.page-item span{font-size:13px;color:#333}
+.smallmsg{font-size:12px;padding:6px 12px;border-radius:6px;margin-top:8px;display:none}
+.smallmsg.ok{background:#e6f9f0;color:#1a7a4a;display:block}
+.smallmsg.err{background:#fde8e8;color:#c0392b;display:block}
 </style>
 </head>
 <body>
@@ -64,8 +75,7 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
 <!-- Modal Categorie -->
 <div class="modal-overlay" id="modal-cat">
   <div class="modal">
-    <div class="modal-title">
-      🗂 Gestisci categorie
+    <div class="modal-title">🗂 Gestisci categorie
       <button class="btn btn-secondary btn-sm" onclick="chiudiModal()">✕ Chiudi</button>
     </div>
     <div id="lista-cat-modal"></div>
@@ -80,6 +90,7 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
 </div>
 
 <div class="wrap">
+  <!-- TOKEN -->
   <div class="token-card">
     <h2>🔑 Token GitHub</h2>
     <div class="token-row">
@@ -96,81 +107,119 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
     <div class="hint" style="margin-top:10px;color:#92400e">Il token viene salvato solo nel tuo browser, non sul server.</div>
   </div>
 
-  <div class="card">
-    <h2>Articolo</h2>
-    <div class="field">
-      <label>Titolo *</label>
-      <input type="text" id="titolo" placeholder="Il titolo del tuo articolo">
-    </div>
-    <div class="row2">
-      <div class="field">
-        <label>Data</label>
-        <input type="date" id="data">
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('articoli')">📝 Articoli</button>
+    <button class="tab" onclick="switchTab('pagine')">📄 Pagine</button>
+    <button class="tab" onclick="switchTab('menu')">🧭 Menu</button>
+  </div>
+
+  <!-- TAB ARTICOLI -->
+  <div class="tab-content active" id="tab-articoli">
+    <div class="card">
+      <h2>Articolo</h2>
+      <div class="field"><label>Titolo *</label><input type="text" id="titolo" placeholder="Il titolo del tuo articolo"></div>
+      <div class="row2">
+        <div class="field"><label>Data</label><input type="date" id="data"></div>
+        <div class="field"><label>Immagine teaser (URL)</label><input type="text" id="teaser" placeholder="https://..."></div>
       </div>
-      <div class="field">
-        <label>Immagine teaser (URL)</label>
-        <input type="text" id="teaser" placeholder="https://...">
-      </div>
-    </div>
-    <div class="row2">
-      <div class="field">
-        <label>Categoria * <span style="color:#c0392b;font-size:11px">obbligatoria</span></label>
-        <div style="display:flex;gap:8px">
-          <select id="categorie" style="flex:1">
-            <option value="">— Seleziona —</option>
-          </select>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="apriModal()">⚙️ Gestisci</button>
+      <div class="row2">
+        <div class="field">
+          <label>Categoria * <span style="color:#c0392b;font-size:11px">obbligatoria</span></label>
+          <div style="display:flex;gap:8px">
+            <select id="categorie" style="flex:1"><option value="">— Seleziona —</option></select>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="apriModal()">⚙️ Gestisci</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Tag</label>
+          <input type="text" id="tags" placeholder="jekyll, web, tutorial">
+          <div class="hint">Separati da virgola</div>
         </div>
       </div>
+    </div>
+    <div class="card">
+      <h2>SEO</h2>
+      <div class="field"><label>Excerpt — descrizione breve per Google e social</label><input type="text" id="excerpt" placeholder="Max 160 caratteri"></div>
+    </div>
+    <div class="card">
+      <h2>Contenuto</h2>
       <div class="field">
-        <label>Tag</label>
-        <input type="text" id="tags" placeholder="jekyll, web, tutorial">
-        <div class="hint">Separati da virgola</div>
+        <textarea id="corpo" placeholder="Scrivi il tuo articolo in Markdown..."></textarea>
+        <div class="hint">Markdown supportato — **grassetto**, *corsivo*, ## Titolo</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>📋 Articoli pubblicati <button class="btn btn-secondary btn-sm" onclick="caricaLista()" style="margin-left:10px">↻ Aggiorna</button></h2>
+      <div id="lista-articoli"><span style="color:#aaa;font-size:13px">Clicca ↻ Aggiorna per caricare la lista</span></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="pubblica()">🚀 Pubblica articolo</button>
+      <button class="btn btn-secondary" onclick="anteprima()">👁 Anteprima .md</button>
+      <button class="btn btn-secondary" onclick="nuovoArticolo()">✚ Nuovo</button>
+      <div id="msg"></div>
+    </div>
+    <div class="card" id="preview-box" style="display:none;margin-top:16px">
+      <h2>Anteprima file .md generato</h2>
+      <pre id="preview-content" style="font-size:13px;line-height:1.7;white-space:pre-wrap;color:#333;background:#f8f8f8;padding:16px;border-radius:8px;overflow-x:auto"></pre>
+    </div>
+  </div>
+
+  <!-- TAB PAGINE -->
+  <div class="tab-content" id="tab-pagine">
+    <div class="card">
+      <h2>📄 Pagine del sito <button class="btn btn-secondary btn-sm" onclick="caricaPagine()" style="margin-left:10px">↻ Aggiorna</button></h2>
+      <div id="lista-pagine"><span style="color:#aaa;font-size:13px">Clicca ↻ Aggiorna per caricare le pagine</span></div>
+    </div>
+    <div class="card" id="editor-pagina-card" style="display:none">
+      <h2>✏️ Modifica pagina: <span id="nome-pagina-edit" style="color:#6c63ff;text-transform:none;font-size:13px"></span></h2>
+      <div class="field"><label>Titolo pagina</label><input type="text" id="pagina-titolo"></div>
+      <div class="field"><label>Contenuto (Markdown)</label><textarea class="page-editor" id="pagina-corpo"></textarea></div>
+      <div class="actions" style="margin-top:12px">
+        <button class="btn btn-primary" onclick="salvaPagina()">💾 Salva pagina</button>
+        <button class="btn btn-secondary" onclick="chiudiEditorPagina()">✕ Annulla</button>
+        <div id="msg-pagina" class="smallmsg"></div>
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <h2>SEO</h2>
-    <div class="field">
-      <label>Excerpt — descrizione breve per Google e social</label>
-      <input type="text" id="excerpt" placeholder="Max 160 caratteri">
+  <!-- TAB MENU -->
+  <div class="tab-content" id="tab-menu">
+    <div class="card">
+      <h2>🧭 Voci del menu principale</h2>
+      <div id="lista-menu"><span style="color:#aaa;font-size:13px">⏳ Caricamento...</span></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid #eee">
+        <div style="font-size:12px;font-weight:600;color:#666;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Aggiungi voce</div>
+        <div class="row2">
+          <div class="field"><label>Nome</label><input type="text" id="menu-nuovo-titolo" placeholder="es. Contatti"></div>
+          <div class="field"><label>URL</label><input type="text" id="menu-nuovo-url" placeholder="es. /contatti/"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="aggiungiVoceMenu()">+ Aggiungi</button>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-green" onclick="salvaMenu()">💾 Salva menu su GitHub</button>
+        <div id="msg-menu" class="smallmsg"></div>
+      </div>
     </div>
-  </div>
-
-  <div class="card">
-    <h2>Contenuto</h2>
-    <div class="field">
-      <textarea id="corpo" placeholder="Scrivi il tuo articolo in Markdown...&#10;&#10;## Titolo sezione&#10;&#10;Testo con **grassetto** e *corsivo*."></textarea>
-      <div class="hint">Markdown supportato</div>
-    </div>
-  </div>
-
-  <div class="card" id="lista-card">
-    <h2>📋 Articoli pubblicati <button class="btn btn-secondary btn-sm" onclick="caricaLista()" style="margin-left:10px">↻ Aggiorna</button></h2>
-    <div id="lista-articoli"><span style="color:#aaa;font-size:13px">Clicca ↻ Aggiorna per caricare la lista</span></div>
-  </div>
-
-  <div class="actions">
-    <button class="btn btn-primary" onclick="pubblica()">🚀 Pubblica articolo</button>
-    <button class="btn btn-secondary" onclick="anteprima()">👁 Anteprima .md</button>
-    <div id="msg"></div>
-  </div>
-
-  <div class="card" id="preview-box" style="display:none;margin-top:16px">
-    <h2>Anteprima file .md generato</h2>
-    <pre id="preview-content" style="font-size:13px;line-height:1.7;white-space:pre-wrap;color:#333;background:#f8f8f8;padding:16px;border-radius:8px;overflow-x:auto"></pre>
   </div>
 </div>
 
 <script>
 const REPO='cialdecompatibili-netizen/cialdecompatibili-netizen.github.io';
 const CAT_FILE='_data/categorie.json';
-const CAT_DEFAULT=[
-  {nome:'tecnica',descrizione:'Articoli tecnici, guide e tutorial'}
-];
-let _categorie=[];
-let _catSha=null;
+const CAT_DEFAULT=[{nome:'tecnica',descrizione:'Articoli tecnici, guide e tutorial'}];
+let _categorie=[];let _catSha=null;
+let _menuSha=null;let _menuVoci=[];
+let _paginaPath='';let _paginaSha='';
+
+// ── TAB ──
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  event.target.classList.add('active');
+  if(t==='menu')caricaMenu();
+}
 
 // ── TOKEN ──
 function salvaToken(){const t=document.getElementById('token-input').value.trim();if(!t)return;localStorage.setItem('gh_token',t);document.getElementById('token-status').innerHTML='<span class="token-saved">✅ Salvato</span>';document.getElementById('token-input').value='';}
@@ -184,83 +233,155 @@ async function caricaCategorie(){
   if(!token){_categorie=JSON.parse(JSON.stringify(CAT_DEFAULT));renderSelect();return;}
   try{
     const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${CAT_FILE}`,{headers:{'Authorization':`token ${token}`}});
-    if(res.ok){
-      const d=await res.json();
-      _catSha=d.sha;
-      _categorie=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
-    }else{
-      _categorie=JSON.parse(JSON.stringify(CAT_DEFAULT));
-    }
+    if(res.ok){const d=await res.json();_catSha=d.sha;_categorie=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));}
+    else{_categorie=JSON.parse(JSON.stringify(CAT_DEFAULT));}
   }catch(e){_categorie=JSON.parse(JSON.stringify(CAT_DEFAULT));}
   renderSelect();
 }
-
 function renderSelect(){
-  const sel=document.getElementById('categorie');
-  const cur=sel.value;
+  const sel=document.getElementById('categorie');const cur=sel.value;
   sel.innerHTML='<option value="">— Seleziona categoria —</option>';
-  _categorie.forEach(c=>{
-    const o=document.createElement('option');
-    o.value=c.nome;o.textContent=c.nome;
-    if(c.nome===cur)o.selected=true;
-    sel.appendChild(o);
-  });
+  _categorie.forEach(c=>{const o=document.createElement('option');o.value=c.nome;o.textContent=c.nome;if(c.nome===cur)o.selected=true;sel.appendChild(o);});
 }
-
-function apriModal(){
-  renderModalLista();
-  document.getElementById('modal-cat').classList.add('open');
-}
+function apriModal(){renderModalLista();document.getElementById('modal-cat').classList.add('open');}
 function chiudiModal(){document.getElementById('modal-cat').classList.remove('open');}
-
 function renderModalLista(){
   const el=document.getElementById('lista-cat-modal');
   if(!_categorie.length){el.innerHTML='<p style="color:#aaa;font-size:13px">Nessuna categoria.</p>';return;}
-  el.innerHTML=_categorie.map((c,i)=>`
-    <div class="cat-item">
-      <div class="cat-item-row">
-        <input type="text" value="${c.nome}" onchange="_categorie[${i}].nome=this.value;renderSelect()" style="font-weight:600;flex:1">
-        <button class="btn btn-danger btn-sm" onclick="rimuoviCategoria(${i})">🗑</button>
-      </div>
-      <input type="text" value="${c.descrizione||''}" placeholder="Descrizione (es. Articoli su tecnologia...)" style="margin-top:6px;font-size:12px;color:#666" onchange="_categorie[${i}].descrizione=this.value">
-    </div>`).join('');
+  el.innerHTML=_categorie.map((c,i)=>`<div class="cat-item"><div class="cat-item-row"><input type="text" value="${c.nome}" onchange="_categorie[${i}].nome=this.value;renderSelect()" style="font-weight:600;flex:1"><button class="btn btn-danger btn-sm" onclick="rimuoviCategoria(${i})">🗑</button></div><input type="text" value="${c.descrizione||''}" placeholder="Descrizione..." style="margin-top:6px;font-size:12px;color:#666" onchange="_categorie[${i}].descrizione=this.value"></div>`).join('');
 }
-
 function aggiungiCategoria(){
-  const nome=document.getElementById('nuova-cat-nome').value.trim();
-  if(!nome)return;
-  if(!_categorie.find(c=>c.nome===nome)){
-    _categorie.push({nome,descrizione:''});
-    renderSelect();
-  }
-  document.getElementById('nuova-cat-nome').value='';
-  document.getElementById('categorie').value=nome;
-  chiudiModal();
+  const nome=document.getElementById('nuova-cat-nome').value.trim();if(!nome)return;
+  if(!_categorie.find(c=>c.nome===nome)){_categorie.push({nome,descrizione:''});renderSelect();}
+  document.getElementById('nuova-cat-nome').value='';document.getElementById('categorie').value=nome;chiudiModal();
 }
-
-function rimuoviCategoria(i){
-  _categorie.splice(i,1);
-  renderModalLista();
-  renderSelect();
-}
-
+function rimuoviCategoria(i){_categorie.splice(i,1);renderModalLista();renderSelect();}
 async function salvaCategorie(){
-  const token=localStorage.getItem('gh_token');
-  const mMsg=document.getElementById('modal-msg');
+  const token=localStorage.getItem('gh_token');const mMsg=document.getElementById('modal-msg');
   if(!token){mMsg.style.display='block';mMsg.style.color='#c0392b';mMsg.textContent='⚠️ Token mancante.';return;}
   mMsg.style.display='block';mMsg.style.color='#666';mMsg.textContent='⏳ Salvataggio...';
   const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(_categorie,null,2))));
-  const body={message:'Aggiorna categorie',content:encoded};
-  if(_catSha)body.sha=_catSha;
+  const body={message:'Aggiorna categorie',content:encoded};if(_catSha)body.sha=_catSha;
   const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${CAT_FILE}`,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
   const json=await res.json();
-  if(res.ok){_catSha=json.content.sha;mMsg.style.color='#1a7a4a';mMsg.textContent='✅ Categorie salvate!';}
+  if(res.ok){_catSha=json.content.sha;mMsg.style.color='#1a7a4a';mMsg.textContent='✅ Salvate!';}
   else{mMsg.style.color='#c0392b';mMsg.textContent=`❌ ${json.message}`;}
 }
 
+// ── MENU ──
+async function caricaMenu(){
+  const token=localStorage.getItem('gh_token');
+  const el=document.getElementById('lista-menu');
+  if(!token){el.innerHTML='<span style="color:#c0392b;font-size:13px">⚠️ Token mancante.</span>';return;}
+  el.innerHTML='<span style="color:#aaa;font-size:13px">⏳ Caricamento...</span>';
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/_data/navigation.yml`,{headers:{'Authorization':`token ${token}`}});
+  if(!res.ok){el.innerHTML='<span style="color:#c0392b;font-size:13px">❌ Errore.</span>';return;}
+  const d=await res.json();_menuSha=d.sha;
+  const yaml=decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+  _menuVoci=[];
+  const lines=yaml.split('\n');
+  let titolo='';
+  for(const line of lines){
+    const tMatch=line.match(/^\s+-\s+title:\s+"?([^"]+)"?/);
+    const uMatch=line.match(/^\s+url:\s+(.+)/);
+    if(tMatch)titolo=tMatch[1].trim();
+    if(uMatch&&titolo){_menuVoci.push({title:titolo,url:uMatch[1].trim()});titolo='';}
+  }
+  renderMenu();
+}
+function renderMenu(){
+  const el=document.getElementById('lista-menu');
+  if(!_menuVoci.length){el.innerHTML='<span style="color:#aaa;font-size:13px">Nessuna voce.</span>';return;}
+  el.innerHTML=_menuVoci.map((v,i)=>`
+    <div class="menu-item">
+      <input type="text" value="${v.title}" onchange="_menuVoci[${i}].title=this.value" placeholder="Nome voce">
+      <input type="text" value="${v.url}" onchange="_menuVoci[${i}].url=this.value" placeholder="/url/" class="url-input">
+      <button class="btn btn-danger btn-sm" onclick="rimuoviVoceMenu(${i})">🗑</button>
+    </div>`).join('');
+}
+function aggiungiVoceMenu(){
+  const t=document.getElementById('menu-nuovo-titolo').value.trim();
+  const u=document.getElementById('menu-nuovo-url').value.trim();
+  if(!t||!u)return;
+  _menuVoci.push({title:t,url:u});
+  document.getElementById('menu-nuovo-titolo').value='';
+  document.getElementById('menu-nuovo-url').value='';
+  renderMenu();
+}
+function rimuoviVoceMenu(i){_menuVoci.splice(i,1);renderMenu();}
+async function salvaMenu(){
+  const token=localStorage.getItem('gh_token');
+  const msg=document.getElementById('msg-menu');
+  if(!token){msg.className='smallmsg err';msg.textContent='⚠️ Token mancante.';return;}
+  msg.className='smallmsg';msg.style.display='block';msg.style.color='#666';msg.textContent='⏳ Salvataggio...';
+  let yaml='main:\n';
+  _menuVoci.forEach(v=>{yaml+=`  - title: "${v.title}"\n    url: ${v.url}\n`;});
+  const encoded=btoa(unescape(encodeURIComponent(yaml)));
+  const body={message:'Aggiorna menu',content:encoded};if(_menuSha)body.sha=_menuSha;
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/_data/navigation.yml`,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const json=await res.json();
+  if(res.ok){_menuSha=json.content.sha;msg.className='smallmsg ok';msg.textContent='✅ Menu salvato! Live in ~60 secondi.';}
+  else{msg.className='smallmsg err';msg.textContent=`❌ ${json.message}`;}
+}
+
+// ── PAGINE ──
+async function caricaPagine(){
+  const token=localStorage.getItem('gh_token');
+  const el=document.getElementById('lista-pagine');
+  if(!token){el.innerHTML='<span style="color:#c0392b;font-size:13px">⚠️ Token mancante.</span>';return;}
+  el.innerHTML='<span style="color:#aaa;font-size:13px">⏳ Caricamento...</span>';
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/_pages`,{headers:{'Authorization':`token ${token}`}});
+  if(!res.ok){el.innerHTML='<span style="color:#c0392b;font-size:13px">❌ Errore.</span>';return;}
+  const files=await res.json();
+  el.innerHTML=files.map(f=>`
+    <div class="page-item">
+      <span>${f.name.replace(/\.md$/,'')}</span>
+      <button class="btn btn-secondary btn-sm" onclick="modificaPagina('${f.path}','${f.sha}')">✏️ Modifica</button>
+    </div>`).join('');
+}
+async function modificaPagina(path,sha){
+  const token=localStorage.getItem('gh_token');
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{headers:{'Authorization':`token ${token}`}});
+  const d=await res.json();
+  const content=decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+  const fm=content.match(/^---\n([\s\S]*?)\n---/);
+  const corpo=content.replace(/^---[\s\S]*?---\n\n?/,'');
+  const titleMatch=(fm?fm[1]:'').match(/title:\s*"?([^"\n]+)"?/);
+  _paginaPath=path;_paginaSha=d.sha;
+  document.getElementById('pagina-titolo').value=titleMatch?titleMatch[1].trim():'';
+  document.getElementById('pagina-corpo').value=corpo;
+  document.getElementById('nome-pagina-edit').textContent=path.split('/').pop();
+  document.getElementById('editor-pagina-card').style.display='block';
+  document.getElementById('editor-pagina-card').scrollIntoView({behavior:'smooth'});
+}
+async function salvaPagina(){
+  const token=localStorage.getItem('gh_token');
+  const msg=document.getElementById('msg-pagina');
+  const titolo=document.getElementById('pagina-titolo').value.trim();
+  const corpo=document.getElementById('pagina-corpo').value;
+  const fm=`---\nlayout: single\ntitle: "${titolo}"\npermalink: /${_paginaPath.replace('_pages/','').replace('.md','')}/\nauthor_profile: true\n---\n\n`;
+  const encoded=btoa(unescape(encodeURIComponent(fm+corpo)));
+  const body={message:`Aggiorna pagina: ${titolo}`,content:encoded,sha:_paginaSha};
+  msg.className='smallmsg';msg.style.display='block';msg.style.color='#666';msg.textContent='⏳ Salvataggio...';
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${_paginaPath}`,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const json=await res.json();
+  if(res.ok){_paginaSha=json.content.sha;msg.className='smallmsg ok';msg.textContent='✅ Pagina salvata! Live in ~60 secondi.';}
+  else{msg.className='smallmsg err';msg.textContent=`❌ ${json.message}`;}
+}
+function chiudiEditorPagina(){document.getElementById('editor-pagina-card').style.display='none';}
+
 // ── ARTICOLI ──
 function slugify(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
-
+function nuovoArticolo(){
+  document.getElementById('titolo').value='';document.getElementById('excerpt').value='';
+  document.getElementById('teaser').value='';document.getElementById('tags').value='';
+  document.getElementById('corpo').value='';document.getElementById('categorie').value='';
+  document.getElementById('data').value=new Date().toISOString().split('T')[0];
+  document.getElementById('preview-box').style.display='none';
+  window._editSha=null;window._editPath=null;
+  const msg=document.getElementById('msg');msg.style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 function buildMd(){
   const titolo=document.getElementById('titolo').value.trim();
   const data=document.getElementById('data').value;
@@ -274,20 +395,15 @@ function buildMd(){
   if(teaser)fm+=`header:\n  teaser: "${teaser}"\n`;
   if(cat)fm+=`categories:\n  - ${cat}\n`;
   if(tags.length)fm+=`tags:\n${tags.map(t=>`  - ${t}`).join('\n')}\n`;
-  fm+=`---\n\n${corpo}`;
-  return fm;
+  fm+=`---\n\n${corpo}`;return fm;
 }
-
 function anteprima(){
   document.getElementById('preview-content').textContent=buildMd();
-  const box=document.getElementById('preview-box');
-  box.style.display='block';
+  const box=document.getElementById('preview-box');box.style.display='block';
   box.scrollIntoView({behavior:'smooth'});
 }
-
 async function caricaLista(){
-  const token=localStorage.getItem('gh_token');
-  const el=document.getElementById('lista-articoli');
+  const token=localStorage.getItem('gh_token');const el=document.getElementById('lista-articoli');
   if(!token){el.innerHTML='<span style="color:#c0392b;font-size:13px">⚠️ Token mancante.</span>';return;}
   el.innerHTML='<span style="color:#aaa;font-size:13px">⏳ Caricamento...</span>';
   const res=await fetch(`https://api.github.com/repos/${REPO}/contents/_posts`,{headers:{'Authorization':`token ${token}`}});
@@ -300,7 +416,6 @@ async function caricaLista(){
       <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}','${f.sha}')">✏️ Modifica</button>
     </div>`).join('');
 }
-
 async function modificaArticolo(path,sha){
   const token=localStorage.getItem('gh_token');
   const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{headers:{'Authorization':`token ${token}`}});
@@ -314,19 +429,16 @@ async function modificaArticolo(path,sha){
   document.getElementById('excerpt').value=get('excerpt');
   document.getElementById('teaser').value=get('teaser')||'';
   const catMatch=(fm?fm[1]:'').match(/categories:\n\s*-\s*(.+)/);
-  if(catMatch){document.getElementById('categorie').value=catMatch[1].trim();}
+  if(catMatch)document.getElementById('categorie').value=catMatch[1].trim();
   const tags=(fm?fm[1]:'').match(/tags:\n([\s\S]*?)(?=\n\w|\n---)/);
   if(tags)document.getElementById('tags').value=tags[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
   document.getElementById('corpo').value=body;
   window._editSha=data.sha;window._editPath=path;
-  const msg=document.getElementById('msg');
-  msg.className='ok';msg.textContent='✏️ Articolo caricato — modifica e premi Pubblica.';msg.style.display='block';
+  const msg=document.getElementById('msg');msg.className='ok';msg.textContent='✏️ Articolo caricato — modifica e premi Pubblica.';msg.style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
-
 async function pubblica(){
-  const msg=document.getElementById('msg');
-  const token=localStorage.getItem('gh_token');
+  const msg=document.getElementById('msg');const token=localStorage.getItem('gh_token');
   const titolo=document.getElementById('titolo').value.trim();
   const cat=document.getElementById('categorie').value;
   const data=document.getElementById('data').value;
