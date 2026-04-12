@@ -113,6 +113,11 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
     </div>
   </div>
 
+  <div class="card" id="lista-card">
+    <h2>📋 Articoli pubblicati <button class="btn btn-secondary btn-sm" onclick="caricaLista()" style="margin-left:10px">↻ Aggiorna</button></h2>
+    <div id="lista-articoli"><span style="color:#aaa;font-size:13px">Clicca ↻ Aggiorna per caricare la lista</span></div>
+  </div>
+
   <div class="actions">
     <button class="btn btn-primary" onclick="pubblica()">🚀 Pubblica articolo</button>
     <button class="btn btn-secondary" onclick="anteprima()">👁 Anteprima .md</button>
@@ -200,7 +205,51 @@ function anteprima(){
   box.scrollIntoView({behavior:'smooth'});
 }
 
-async function pubblica(){
+async function caricaLista(){
+  const token=localStorage.getItem('gh_token');
+  const el=document.getElementById('lista-articoli');
+  if(!token){el.innerHTML='<span style="color:#c0392b;font-size:13px">⚠️ Salva prima il token.</span>';return;}
+  el.innerHTML='<span style="color:#aaa;font-size:13px">⏳ Caricamento...</span>';
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/_posts`,{headers:{'Authorization':`token ${token}`}});
+  if(!res.ok){el.innerHTML='<span style="color:#c0392b;font-size:13px">❌ Errore caricamento lista.</span>';return;}
+  const files=await res.json();
+  if(!files.length){el.innerHTML='<span style="color:#aaa;font-size:13px">Nessun articolo trovato.</span>';return;}
+  el.innerHTML=files.reverse().map(f=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0">
+      <span style="font-size:13px;color:#333">${f.name.replace(/\.md$/,'')}</span>
+      <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}','${f.sha}')">✏️ Modifica</button>
+    </div>`).join('');
+}
+
+async function modificaArticolo(path,sha){
+  const token=localStorage.getItem('gh_token');
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{headers:{'Authorization':`token ${token}`}});
+  const data=await res.json();
+  const content=decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
+  // Estrai front matter
+  const fm=content.match(/^---\n([\s\S]*?)\n---/);
+  const body=content.replace(/^---[\s\S]*?---\n\n?/,'');
+  const get=(k)=>{const m=(fm?fm[1]:'').match(new RegExp(`${k}:\\s*"?([^"\\n]+)"?`));return m?m[1].trim():'';}
+  document.getElementById('titolo').value=get('title');
+  document.getElementById('data').value=get('date');
+  document.getElementById('excerpt').value=get('excerpt');
+  document.getElementById('teaser').value=get('teaser')||'';
+  // categorie e tag
+  const cats=(fm?fm[1]:'').match(/categories:\n([\s\S]*?)(?=\n\w|\n---)/);
+  if(cats) document.getElementById('categorie').value=cats[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
+  const tags=(fm?fm[1]:'').match(/tags:\n([\s\S]*?)(?=\n\w|\n---)/);
+  if(tags) document.getElementById('tags').value=tags[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
+  document.getElementById('corpo').value=body;
+  // Salva sha e path per update
+  window._editSha=data.sha;
+  window._editPath=path;
+  document.getElementById('msg').className='ok';
+  document.getElementById('msg').textContent='✏️ Articolo caricato — modifica e premi Pubblica per aggiornare.';
+  document.getElementById('msg').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+
   const msg=document.getElementById('msg');
   const token=localStorage.getItem('gh_token');
   const titolo=document.getElementById('titolo').value.trim();
@@ -209,17 +258,19 @@ async function pubblica(){
   if(!token){msg.className='err';msg.textContent='⚠️ Inserisci prima il token GitHub!';msg.style.display='block';return;}
   if(!titolo){msg.className='err';msg.textContent='⚠️ Inserisci un titolo!';msg.style.display='block';return;}
   if(!corpo){msg.className='err';msg.textContent='⚠️ Scrivi il contenuto!';msg.style.display='block';return;}
-  const filename=`_posts/${data}-${slugify(titolo)}.md`;
+  const filename=window._editPath || `_posts/${data}-${slugify(titolo)}.md`;
   const encoded=btoa(unescape(encodeURIComponent(buildMd())));
+  const body={message:`${window._editSha?'Aggiorna':'Nuovo'} articolo: ${titolo}`,content:encoded};
+  if(window._editSha) body.sha=window._editSha;
   msg.className='';msg.textContent='⏳ Pubblicazione...';msg.style.display='block';
   try{
     const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${filename}`,{
       method:'PUT',
       headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},
-      body:JSON.stringify({message:`Nuovo articolo: ${titolo}`,content:encoded})
+      body:JSON.stringify(body)
     });
     const json=await res.json();
-    if(res.ok){msg.className='ok';msg.textContent='✅ Pubblicato! Sarà live in ~60 secondi.';}
+    if(res.ok){msg.className='ok';msg.textContent='✅ Pubblicato! Sarà live in ~60 secondi.';window._editSha=null;window._editPath=null;}
     else{msg.className='err';msg.textContent=`❌ Errore GitHub: ${json.message}`;}
   }catch(e){
     msg.className='err';msg.textContent='❌ Errore di rete.';
