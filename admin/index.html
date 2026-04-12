@@ -97,7 +97,15 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         </div>
         <div class="grid2">
           <div class="field"><label>Tag <span class="hint" style="display:inline">separati da virgola</span></label><input type="text" id="tags" placeholder="jekyll, web"></div>
-          <div class="field"><label>Immagine teaser (URL)</label><input type="text" id="teaser" placeholder="https://..."></div>
+          <div class="field">
+            <label>Immagine teaser</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="text" id="teaser" placeholder="https://... oppure carica ↓">
+              <label class="btn btn-secondary btn-sm" style="cursor:pointer;white-space:nowrap">📁 Carica<input type="file" id="upload-img" accept="image/*" style="display:none" onchange="uploadImmagine(this)"></label>
+            </div>
+            <div id="upload-progress" style="display:none;font-size:11px;color:#6c63ff;margin-top:4px">⏳ Caricamento immagine...</div>
+            <div id="upload-preview" style="display:none;margin-top:8px"><img id="upload-preview-img" style="max-height:80px;border-radius:6px;border:1.5px solid #e8e8e8"></div>
+          </div>
         </div>
         <div class="field"><label>Excerpt SEO</label><input type="text" id="excerpt" placeholder="Descrizione breve per Google (max 160 caratteri)"></div>
         <div class="field">
@@ -123,6 +131,16 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
       <div class="card">
         <div class="card-title" style="display:flex;justify-content:space-between">Pubblicati <button class="btn btn-secondary btn-sm" onclick="caricaLista()">↻ Aggiorna</button></div>
         <div id="lista-articoli"><span style="color:#bbb;font-size:13px">Clicca ↻ per caricare</span></div>
+      </div>
+      <div id="modal-elimina" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center">
+        <div style="background:white;border-radius:12px;padding:28px 32px;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1a1a2e">🗑 Elimina articolo</div>
+          <div style="font-size:13px;color:#666;margin-bottom:20px">Sicuro di voler eliminare <strong id="modal-nome-art"></strong>? L'operazione non è reversibile.</div>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn btn-secondary" onclick="chiudiModal()">Annulla</button>
+            <button class="btn btn-danger" onclick="confermaElimina()">🗑 Elimina</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -433,8 +451,67 @@ async function salvaPagina(){
 }
 function chiudiPagina(){document.getElementById('editor-pagina').style.display='none';}
 
-// ARTICOLI
-function slugify(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
+// ELIMINA ARTICOLO
+let _eliminaPath=null;let _eliminaSha=null;
+function chiediElimina(path,sha,nome){
+  _eliminaPath=path;_eliminaSha=sha;
+  document.getElementById('modal-nome-art').textContent=nome;
+  const m=document.getElementById('modal-elimina');
+  m.style.display='flex';
+}
+function chiudiModal(){
+  document.getElementById('modal-elimina').style.display='none';
+  _eliminaPath=null;_eliminaSha=null;
+}
+async function confermaElimina(){
+  if(!_eliminaPath||!_eliminaSha)return;
+  chiudiModal();
+  showMsg('msg-art','⏳ Eliminazione...','');
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${_eliminaPath}`,{
+    method:'DELETE',
+    headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},
+    body:JSON.stringify({message:'Elimina articolo',sha:_eliminaSha})
+  });
+  if(res.ok){showMsg('msg-art','✅ Articolo eliminato!','ok');caricaLista();}
+  else{const j=await res.json();showMsg('msg-art','❌ '+j.message,'err');}
+}
+
+// UPLOAD IMMAGINE
+async function uploadImmagine(input){
+  if(!tok())return showMsg('msg-art','⚠️ Token mancante per upload.','err');
+  const file=input.files[0];if(!file)return;
+  document.getElementById('upload-progress').style.display='block';
+  document.getElementById('upload-preview').style.display='none';
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    const base64=e.target.result.split(',')[1];
+    const nome=file.name.replace(/[^a-zA-Z0-9._-]/g,'-').toLowerCase();
+    const path=`assets/images/${nome}`;
+    // controlla se esiste già (per avere lo sha)
+    let sha=null;
+    const check=await ghGet(path);
+    if(check.ok){const d=await check.json();sha=d.sha;}
+    const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{
+      method:'PUT',
+      headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},
+      body:JSON.stringify({message:`Upload immagine: ${nome}`,content:base64,...(sha?{sha}:{})})
+    });
+    document.getElementById('upload-progress').style.display='none';
+    if(res.ok){
+      const url=`/assets/images/${nome}`;
+      document.getElementById('teaser').value=url;
+      document.getElementById('upload-preview-img').src=e.target.result;
+      document.getElementById('upload-preview').style.display='block';
+      showMsg('msg-art',`✅ Immagine caricata: ${url}`,'ok');
+    } else {
+      const j=await res.json();
+      showMsg('msg-art','❌ Upload fallito: '+j.message,'err');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
 function nuovoArticolo(){
   ['titolo','excerpt','teaser','tags','corpo'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('categorie').value='';
@@ -472,7 +549,10 @@ async function caricaLista(){
   document.getElementById('lista-articoli').innerHTML=files.reverse().map(f=>`
     <div class="list-row">
       <span>${f.name.replace(/\.md$/,'')}</span>
-      <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}')">✏️ Modifica</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}')">✏️ Modifica</button>
+        <button class="btn btn-danger btn-sm" onclick="chiediElimina('${f.path}','${f.sha}','${f.name}')">🗑</button>
+      </div>
     </div>`).join('');
 }
 async function modificaArticolo(path){
