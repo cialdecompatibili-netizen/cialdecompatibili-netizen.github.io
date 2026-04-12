@@ -223,12 +223,10 @@ function renderModalLista(){
   el.innerHTML=_categorie.map((c,i)=>`
     <div class="cat-item">
       <div class="cat-item-row">
-        <input type="text" value="${c.nome}" onchange="_categorie[${i}].nome=this.value;renderSelect()" style="font-weight:600">
+        <input type="text" value="${c.nome}" onchange="_categorie[${i}].nome=this.value;renderSelect()" style="font-weight:600;flex:1">
         <button class="btn btn-danger btn-sm" onclick="rimuoviCategoria(${i})">🗑</button>
       </div>
-      <div class="cat-desc-row">
-        <input type="text" value="${c.descrizione||''}" placeholder="Descrizione categoria..." onchange="_categorie[${i}].descrizione=this.value" class="cat-desc-row input">
-      </div>
+      <input type="text" value="${c.descrizione||''}" placeholder="Descrizione (es. Articoli su tecnologia...)" style="margin-top:6px;font-size:12px;color:#666" onchange="_categorie[${i}].descrizione=this.value">
     </div>`).join('');
 }
 
