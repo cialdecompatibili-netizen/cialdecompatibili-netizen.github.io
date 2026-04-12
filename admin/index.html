@@ -133,6 +133,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
               <button onmousedown="event.preventDefault()" onclick="fmt('insertOrderedList')" title="Lista numerata">1. Lista</button>
               <div class="sep"></div>
               <button onmousedown="event.preventDefault()" onclick="inserisciLink()" title="Link">🔗</button>
+              <button onmousedown="event.preventDefault()" onclick="inserisciImmagine()" title="Immagine nel testo">🖼</button>
               <button onmousedown="event.preventDefault()" onclick="fmt('removeFormat')" title="Rimuovi formattazione">✕ fmt</button>
             </div>
             <div id="vis-editor" class="vis-editor" contenteditable="true" spellcheck="true"></div>
@@ -154,6 +155,30 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         <div class="card-title" style="display:flex;justify-content:space-between">Pubblicati <button class="btn btn-secondary btn-sm" onclick="caricaLista()">↻ Aggiorna</button></div>
         <div id="lista-articoli"><span style="color:#bbb;font-size:13px">Clicca ↻ per caricare</span></div>
       </div>
+      <div id="modal-img" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center">
+        <div style="background:white;border-radius:12px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18)">
+          <div style="font-size:16px;font-weight:700;margin-bottom:16px;color:#1a1a2e">🖼 Inserisci immagine</div>
+          <div class="field">
+            <label>Carica dal PC</label>
+            <label class="btn btn-secondary btn-sm" style="cursor:pointer">📁 Scegli file<input type="file" id="modal-img-file" accept="image/*" style="display:none" onchange="modalUploadImg(this)"></label>
+            <div id="modal-img-progress" style="display:none;font-size:11px;color:#6c63ff;margin-top:6px">⏳ Caricamento...</div>
+          </div>
+          <div class="field">
+            <label>oppure URL diretto</label>
+            <input type="text" id="modal-img-url" placeholder="https://... o /assets/images/foto.jpg">
+          </div>
+          <div class="field">
+            <label>Testo alternativo (alt)</label>
+            <input type="text" id="modal-img-alt" placeholder="Descrizione immagine">
+          </div>
+          <div id="modal-img-preview" style="display:none;margin-bottom:12px"><img id="modal-img-preview-img" style="max-height:100px;border-radius:6px;border:1.5px solid #e8e8e8"></div>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn btn-secondary" onclick="chiudiModalImg()">Annulla</button>
+            <button class="btn btn-primary" onclick="confermaInserisciImg()">🖼 Inserisci</button>
+          </div>
+        </div>
+      </div>
+
       <div id="modal-elimina" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center">
         <div style="background:white;border-radius:12px;padding:28px 32px;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18)">
           <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1a1a2e">🗑 Elimina articolo</div>
@@ -289,6 +314,8 @@ function setCorpo(md){
 }
 function htmlToMd(html){
   return html
+    .replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*>/gi,'![$2]($1)\n')
+    .replace(/<img[^>]*src="([^"]*)"[^>]*>/gi,'![]($1)\n')
     .replace(/<h1[^>]*>(.*?)<\/h1>/gi,'# $1\n')
     .replace(/<h2[^>]*>(.*?)<\/h2>/gi,'## $1\n')
     .replace(/<h3[^>]*>(.*?)<\/h3>/gi,'### $1\n')
@@ -305,6 +332,7 @@ function htmlToMd(html){
 }
 function mdToHtml(md){
   return md
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" style="max-width:100%;height:auto;border-radius:6px;margin:8px 0">')
     .replace(/^### (.+)$/gm,'<h3>$1</h3>')
     .replace(/^## (.+)$/gm,'<h2>$1</h2>')
     .replace(/^# (.+)$/gm,'<h1>$1</h1>')
@@ -503,7 +531,76 @@ async function confermaElimina(){
   else{const j=await res.json();showMsg('msg-art','❌ '+j.message,'err');}
 }
 
-// UPLOAD IMMAGINE
+// IMMAGINE NELL'EDITOR
+let _savedRange=null;
+function inserisciImmagine(){
+  const sel=window.getSelection();
+  if(sel.rangeCount)_savedRange=sel.getRangeAt(0).cloneRange();
+  document.getElementById('modal-img-url').value='';
+  document.getElementById('modal-img-alt').value='';
+  document.getElementById('modal-img-preview').style.display='none';
+  document.getElementById('modal-img-progress').style.display='none';
+  document.getElementById('modal-img-file').value='';
+  document.getElementById('modal-img').style.display='flex';
+}
+function chiudiModalImg(){
+  document.getElementById('modal-img').style.display='none';
+}
+async function modalUploadImg(input){
+  if(!tok()){alert('Token mancante');return;}
+  const file=input.files[0];if(!file)return;
+  document.getElementById('modal-img-progress').style.display='block';
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    const base64=e.target.result.split(',')[1];
+    const nome=file.name.replace(/[^a-zA-Z0-9._-]/g,'-').toLowerCase();
+    const path=`assets/images/${nome}`;
+    let sha=null;
+    try{const check=await ghGet(path);if(check.ok){const d=await check.json();if(d&&typeof d.sha==='string')sha=d.sha;}}catch(err){}
+    const payload={message:`Upload immagine: ${nome}`,content:base64};
+    if(sha)payload.sha=sha;
+    const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{
+      method:'PUT',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    document.getElementById('modal-img-progress').style.display='none';
+    if(res.ok){
+      const url=`/assets/images/${nome}`;
+      document.getElementById('modal-img-url').value=url;
+      document.getElementById('modal-img-preview-img').src=e.target.result;
+      document.getElementById('modal-img-preview').style.display='block';
+      if(!document.getElementById('modal-img-alt').value)
+        document.getElementById('modal-img-alt').value=nome.replace(/\.[^.]+$/,'').replace(/-/g,' ');
+    }else{
+      const j=await res.json();alert('Upload fallito: '+j.message);
+    }
+  };
+  input.value='';
+  reader.readAsDataURL(file);
+}
+function confermaInserisciImg(){
+  const url=document.getElementById('modal-img-url').value.trim();
+  if(!url){alert('Inserisci un URL o carica un file.');return;}
+  const alt=document.getElementById('modal-img-alt').value.trim()||'immagine';
+  const editor=document.getElementById('vis-editor');
+  if(_editorMode==='visuale'){
+    editor.focus();
+    if(_savedRange){
+      const sel=window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(_savedRange);
+    }
+    document.execCommand('insertHTML',false,`<img src="${url}" alt="${alt}" style="max-width:100%;height:auto;border-radius:6px;margin:8px 0">`);
+  } else {
+    const ta=document.getElementById('corpo');
+    const pos=ta.selectionStart;
+    const md=`\n![${alt}](${url})\n`;
+    ta.value=ta.value.slice(0,pos)+md+ta.value.slice(pos);
+  }
+  chiudiModalImg();
+}
+
+// UPLOAD IMMAGINE TEASER
 async function uploadImmagine(input){
   if(!tok())return showMsg('msg-art','⚠️ Token mancante per upload.','err');
   const file=input.files[0];if(!file)return;
