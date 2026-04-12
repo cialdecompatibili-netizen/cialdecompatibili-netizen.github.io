@@ -134,7 +134,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
             <button class="active" id="btn-visuale" onclick="setEditor('visuale')">✏️ Visuale</button>
             <button id="btn-markdown" onclick="setEditor('markdown')">🔣 Markdown</button>
           </div>
-          <div id="ve-box">
+          <div id="ve-box" style="display:block">
             <div class="ve-toolbar">
               <select onchange="document.execCommand('formatBlock',false,this.value);this.value='';document.getElementById('ve-body').focus()">
                 <option value="">Paragrafo</option>
@@ -495,6 +495,7 @@ function chiudiPagina(){document.getElementById('editor-pagina').style.display='
 function slugify(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
 function nuovoArticolo(){
   ['titolo','excerpt','teaser','tags','corpo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ve-body').innerHTML='';
   document.getElementById('categorie').value='';
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
   document.getElementById('preview-box').style.display='none';
