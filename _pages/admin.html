@@ -1,0 +1,232 @@
+---
+layout: none
+permalink: /admin/
+---
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Jekyll Blog</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#222;min-height:100vh}
+header{background:#1a1a2e;color:white;padding:16px 32px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:18px;font-weight:600;letter-spacing:.3px}
+header span{font-size:12px;opacity:.5}
+.wrap{max-width:780px;margin:32px auto;padding:0 20px 60px}
+.card{background:white;border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.card h2{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px}
+.field{margin-bottom:16px}
+label{display:block;font-size:13px;font-weight:500;color:#444;margin-bottom:5px}
+input[type=text],input[type=date],input[type=password],textarea{width:100%;padding:9px 12px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;font-family:inherit;background:#fafafa;transition:border .15s}
+input:focus,textarea:focus{outline:none;border-color:#6c63ff;background:#fff}
+textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13px;line-height:1.8;resize:vertical}
+.hint{font-size:11px;color:#aaa;margin-top:3px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:#6c63ff;color:white}.btn-primary:hover{background:#5a52e0}
+.btn-secondary{background:#f0f0f0;color:#444}.btn-secondary:hover{background:#e5e5e5}
+.btn-sm{padding:7px 14px;font-size:12px}
+.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#msg{font-size:13px;padding:8px 14px;border-radius:8px;display:none}
+#msg.ok{background:#e6f9f0;color:#1a7a4a;display:block}
+#msg.err{background:#fde8e8;color:#c0392b;display:block}
+</style>
+/* token card */
+.token-card{background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;padding:20px 24px;margin-bottom:16px}
+.token-card h2{font-size:11px;font-weight:600;color:#92400e;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+.token-row{display:flex;gap:8px;align-items:center}
+.token-row input{flex:1;font-family:'Courier New',monospace;font-size:13px;background:#fffdf0;border-color:#fde68a}
+.token-row input:focus{border-color:#f59e0b}
+.token-actions{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+.token-status{font-size:12px;color:#92400e;font-weight:500}
+.token-link{font-size:12px;color:#6c63ff;text-decoration:none;margin-left:auto}
+.token-link:hover{text-decoration:underline}
+.token-saved{font-size:12px;color:#1a7a4a;background:#e6f9f0;padding:4px 10px;border-radius:6px;font-weight:500}
+</style>
+</head>
+<body>
+<header>
+  <h1>✍️ Admin Blog</h1>
+  <span>cialdecompatibili-netizen/jekyll2</span>
+</header>
+<div class="wrap">
+
+  <div class="token-card">
+    <h2>🔑 Token GitHub</h2>
+    <div class="token-row">
+      <input type="password" id="token-input" placeholder="Incolla qui il tuo token GitHub (ghp_xxx...)">
+      <button class="btn btn-secondary btn-sm" onclick="toggleToken()">👁 Mostra</button>
+    </div>
+    <div class="token-actions">
+      <button class="btn btn-sm" style="background:#f59e0b;color:#333;font-weight:600" onclick="salvaToken()">💾 Salva token</button>
+      <button class="btn btn-secondary btn-sm" onclick="caricaToken()">📋 Mostra salvato</button>
+      <button class="btn btn-secondary btn-sm" onclick="cancellaToken()">🗑 Dimentica</button>
+      <span id="token-status" class="token-status"></span>
+      <a href="https://github.com/settings/tokens/new?scopes=repo&description=CMS+Jekyll" target="_blank" class="token-link">→ Crea token su GitHub</a>
+    </div>
+    <div class="hint" style="margin-top:10px;color:#92400e">Il token viene salvato solo nel tuo browser, non sul server. Non condividere questa pagina con nessuno.</div>
+  </div>
+
+  <div class="card">
+    <h2>Articolo</h2>
+    <div class="field">
+      <label>Titolo *</label>
+      <input type="text" id="titolo" placeholder="Il titolo del tuo articolo">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Data</label>
+        <input type="date" id="data">
+      </div>
+      <div class="field">
+        <label>Immagine teaser (URL)</label>
+        <input type="text" id="teaser" placeholder="https://...">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Categorie</label>
+        <input type="text" id="categorie" placeholder="tecnologia, lifestyle">
+        <div class="hint">Separate da virgola</div>
+      </div>
+      <div class="field">
+        <label>Tag</label>
+        <input type="text" id="tags" placeholder="jekyll, web, tutorial">
+        <div class="hint">Separati da virgola</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>SEO</h2>
+    <div class="field">
+      <label>Excerpt — descrizione breve per Google e social</label>
+      <input type="text" id="excerpt" placeholder="Max 160 caratteri — comparirà nei risultati di ricerca">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Contenuto</h2>
+    <div class="field">
+      <textarea id="corpo" placeholder="Scrivi qui il tuo articolo in Markdown...&#10;&#10;## Titolo sezione&#10;&#10;Testo con **grassetto** e *corsivo*.&#10;&#10;- Lista puntata&#10;- Altro punto&#10;&#10;[Link](https://esempio.com)"></textarea>
+      <div class="hint">Markdown supportato — grassetto **testo**, corsivo *testo*, titoli ## Titolo</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="pubblica()">🚀 Pubblica articolo</button>
+    <button class="btn btn-secondary" onclick="anteprima()">👁 Anteprima .md</button>
+    <div id="msg"></div>
+  </div>
+
+  <div class="card" id="preview-box" style="display:none;margin-top:16px">
+    <h2>Anteprima file .md generato</h2>
+    <pre id="preview-content" style="font-size:13px;line-height:1.7;white-space:pre-wrap;color:#333;background:#f8f8f8;padding:16px;border-radius:8px;overflow-x:auto"></pre>
+  </div>
+
+</div>
+<script>
+const REPO='cialdecompatibili-netizen/jekyll2';
+
+function salvaToken(){
+  const t=document.getElementById('token-input').value.trim();
+  if(!t){return;}
+  localStorage.setItem('gh_token',t);
+  document.getElementById('token-status').innerHTML='<span class="token-saved">✅ Salvato</span>';
+  document.getElementById('token-input').value='';
+}
+
+function caricaToken(){
+  const t=localStorage.getItem('gh_token');
+  if(t){
+    const inp=document.getElementById('token-input');
+    inp.value=t;
+    inp.type='text';
+    document.getElementById('token-status').innerHTML='<span class="token-saved">🔓 Token mostrato</span>';
+  } else {
+    document.getElementById('token-status').textContent='Nessun token salvato.';
+  }
+}
+
+function cancellaToken(){
+  localStorage.removeItem('gh_token');
+  document.getElementById('token-input').value='';
+  document.getElementById('token-status').textContent='🗑 Token dimenticato.';
+}
+
+function toggleToken(){
+  const inp=document.getElementById('token-input');
+  const btn=event.target;
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈 Nascondi';}
+  else{inp.type='password';btn.textContent='👁 Mostra';}
+}
+
+window.onload=function(){
+  document.getElementById('data').value=new Date().toISOString().split('T')[0];
+  if(localStorage.getItem('gh_token')){
+    document.getElementById('token-status').innerHTML='<span class="token-saved">✅ Token presente</span>';
+  }
+};
+
+function slugify(s){
+  return s.toLowerCase()
+    .replace(/[àáâã]/g,'a').replace(/[èéê]/g,'e')
+    .replace(/[ìíî]/g,'i').replace(/[òóô]/g,'o')
+    .replace(/[ùúû]/g,'u').replace(/[^a-z0-9\s-]/g,'')
+    .trim().replace(/\s+/g,'-');
+}
+
+function buildMd(){
+  const titolo=document.getElementById('titolo').value.trim();
+  const data=document.getElementById('data').value;
+  const cats=document.getElementById('categorie').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const tags=document.getElementById('tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const excerpt=document.getElementById('excerpt').value.trim();
+  const teaser=document.getElementById('teaser').value.trim();
+  const corpo=document.getElementById('corpo').value;
+  let fm=`---\nlayout: single\ntitle: "${titolo}"\ndate: ${data}\n`;
+  if(excerpt) fm+=`excerpt: "${excerpt}"\n`;
+  if(teaser) fm+=`header:\n  teaser: "${teaser}"\n`;
+  if(cats.length) fm+=`categories:\n${cats.map(c=>`  - ${c}`).join('\n')}\n`;
+  if(tags.length) fm+=`tags:\n${tags.map(t=>`  - ${t}`).join('\n')}\n`;
+  fm+=`---\n\n${corpo}`;
+  return fm;
+}
+
+function anteprima(){
+  document.getElementById('preview-content').textContent=buildMd();
+  const box=document.getElementById('preview-box');
+  box.style.display='block';
+  box.scrollIntoView({behavior:'smooth'});
+}
+
+async function pubblica(){
+  const msg=document.getElementById('msg');
+  const token=localStorage.getItem('gh_token');
+  const titolo=document.getElementById('titolo').value.trim();
+  const data=document.getElementById('data').value;
+  const corpo=document.getElementById('corpo').value.trim();
+  if(!token){msg.className='err';msg.textContent='⚠️ Inserisci prima il token GitHub!';msg.style.display='block';return;}
+  if(!titolo){msg.className='err';msg.textContent='⚠️ Inserisci un titolo!';msg.style.display='block';return;}
+  if(!corpo){msg.className='err';msg.textContent='⚠️ Scrivi il contenuto!';msg.style.display='block';return;}
+  const filename=`_posts/${data}-${slugify(titolo)}.md`;
+  const encoded=btoa(unescape(encodeURIComponent(buildMd())));
+  msg.className='';msg.textContent='⏳ Pubblicazione...';msg.style.display='block';
+  try{
+    const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${filename}`,{
+      method:'PUT',
+      headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},
+      body:JSON.stringify({message:`Nuovo articolo: ${titolo}`,content:encoded})
+    });
+    const json=await res.json();
+    if(res.ok){msg.className='ok';msg.textContent='✅ Pubblicato! Sarà live in ~60 secondi.';}
+    else{msg.className='err';msg.textContent=`❌ Errore GitHub: ${json.message}`;}
+  }catch(e){
+    msg.className='err';msg.textContent='❌ Errore di rete.';
+  }
+}
+</script>
+</body>
+</html>
