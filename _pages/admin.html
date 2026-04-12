@@ -1,6 +1,6 @@
----
+﻿---
 layout: none
-permalink: /admin/
+permalink: /cms/
 published: true
 ---
 <!DOCTYPE html>
@@ -73,47 +73,47 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 <body>
 
 <div class="topbar">
-  <span class="topbar-title">✍️ Admin</span>
-  <a href="https://cialdecompatibili-netizen.github.io/" target="_blank" class="topbar-link">🌐 Vai al sito ↗</a>
+  <span class="topbar-title">Ô£ì´©Å Admin</span>
+  <a href="https://cialdecompatibili-netizen.github.io/" target="_blank" class="topbar-link">­ƒîÉ Vai al sito Ôåù</a>
 </div>
 
 <div class="layout">
   <nav class="sidebar">
     <div class="nav-label">Generale</div>
-    <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">🏠</span>Dashboard</button>
+    <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">­ƒÅá</span>Dashboard</button>
     <div class="nav-label">Contenuti</div>
-    <button class="nav-item" onclick="showPage('articoli',this)"><span class="icon">📝</span>Articoli</button>
-    <button class="nav-item" onclick="showPage('pagine',this)"><span class="icon">📄</span>Pagine</button>
+    <button class="nav-item" onclick="showPage('articoli',this)"><span class="icon">­ƒôØ</span>Articoli</button>
+    <button class="nav-item" onclick="showPage('pagine',this)"><span class="icon">­ƒôä</span>Pagine</button>
     <div class="nav-label">Impostazioni</div>
-    <button class="nav-item" onclick="showPage('menu',this)"><span class="icon">🧭</span>Menu</button>
-    <button class="nav-item" onclick="showPage('categorie',this)"><span class="icon">🗂</span>Categorie</button>
-    <button class="nav-item" onclick="showPage('token',this)"><span class="icon">🔑</span>Token</button>
+    <button class="nav-item" onclick="showPage('menu',this)"><span class="icon">­ƒº¡</span>Menu</button>
+    <button class="nav-item" onclick="showPage('categorie',this)"><span class="icon">­ƒùé</span>Categorie</button>
+    <button class="nav-item" onclick="showPage('token',this)"><span class="icon">­ƒöæ</span>Token</button>
   </nav>
 
   <main class="main">
 
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
-      <div class="page-title">🏠 Dashboard</div>
+      <div class="page-title">­ƒÅá Dashboard</div>
       <div class="stat-grid">
-        <div class="stat-box"><div class="stat-num" id="stat-art">—</div><div class="stat-label">Articoli</div></div>
-        <div class="stat-box"><div class="stat-num" id="stat-pag">—</div><div class="stat-label">Pagine</div></div>
-        <div class="stat-box"><div class="stat-num" id="stat-cat">—</div><div class="stat-label">Categorie</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-art">ÔÇö</div><div class="stat-label">Articoli</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-pag">ÔÇö</div><div class="stat-label">Pagine</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-cat">ÔÇö</div><div class="stat-label">Categorie</div></div>
       </div>
       <div class="quick-links">
-        <button class="btn btn-primary" onclick="showPageById('articoli')">✚ Nuovo articolo</button>
-        <button class="btn btn-secondary" onclick="showPageById('menu')">🧭 Menu</button>
-        <a href="https://cialdecompatibili-netizen.github.io/" target="_blank" class="btn btn-secondary">🌐 Vai al sito</a>
+        <button class="btn btn-primary" onclick="showPageById('articoli')">Ô£Ü Nuovo articolo</button>
+        <button class="btn btn-secondary" onclick="showPageById('menu')">­ƒº¡ Menu</button>
+        <a href="https://cialdecompatibili-netizen.github.io/" target="_blank" class="btn btn-secondary">­ƒîÉ Vai al sito</a>
       </div>
       <div class="card">
         <div class="card-title">Ultimi articoli pubblicati</div>
-        <div id="dash-ultimi"><span style="color:#bbb;font-size:13px">⏳ Caricamento...</span></div>
+        <div id="dash-ultimi"><span style="color:#bbb;font-size:13px">ÔÅ│ Caricamento...</span></div>
       </div>
     </div>
 
     <!-- ARTICOLI -->
     <div class="page" id="page-articoli">
-      <div class="page-title">📝 Articoli</div>
+      <div class="page-title">­ƒôØ Articoli</div>
       <div class="card">
         <div class="card-title">Nuovo / Modifica articolo</div>
         <div class="field"><label>Titolo *</label><input type="text" id="titolo" placeholder="Titolo dell'articolo"></div>
@@ -121,7 +121,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           <div class="field"><label>Data</label><input type="date" id="data"></div>
           <div class="field">
             <label>Categoria *</label>
-            <select id="categorie"><option value="">— Seleziona —</option></select>
+            <select id="categorie"><option value="">ÔÇö Seleziona ÔÇö</option></select>
           </div>
         </div>
         <div class="grid2">
@@ -132,8 +132,8 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         <div class="field">
           <label>Contenuto</label>
           <div class="editor-toggle">
-            <button class="active" id="btn-visuale" onclick="switchEditor('visuale')">✏️ Visuale</button>
-            <button id="btn-markdown" onclick="switchEditor('markdown')">🔣 Markdown</button>
+            <button class="active" id="btn-visuale" onclick="switchEditor('visuale')">Ô£Å´©Å Visuale</button>
+            <button id="btn-markdown" onclick="switchEditor('markdown')">­ƒöú Markdown</button>
           </div>
           <div id="ve-box">
             <div class="ve-toolbar">
@@ -147,18 +147,18 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
               <button type="button" onmousedown="event.preventDefault();document.execCommand('italic')" title="Corsivo"><i>I</i></button>
               <button type="button" onmousedown="event.preventDefault();document.execCommand('underline')" title="Sottolineato"><u>U</u></button>
               <button type="button" onmousedown="event.preventDefault();document.execCommand('strikeThrough')" title="Barrato"><s>S</s></button>
-              <button type="button" onmousedown="event.preventDefault();document.execCommand('insertUnorderedList')" title="Lista puntata">• Lista</button>
+              <button type="button" onmousedown="event.preventDefault();document.execCommand('insertUnorderedList')" title="Lista puntata">ÔÇó Lista</button>
               <button type="button" onmousedown="event.preventDefault();document.execCommand('insertOrderedList')" title="Lista num.">1. Lista</button>
-              <button type="button" onmousedown="event.preventDefault();veLink()" title="Link">🔗</button>
+              <button type="button" onmousedown="event.preventDefault();veLink()" title="Link">­ƒöù</button>
             </div>
             <div id="ve-body" class="ve-body" contenteditable="true" spellcheck="false"></div>
           </div>
           <textarea class="md" id="corpo" placeholder="Scrivi in Markdown..." style="display:none"></textarea>
         </div>
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="pubblica()">🚀 Pubblica</button>
-          <button class="btn btn-secondary" onclick="nuovoArticolo()">✚ Nuovo</button>
-          <button class="btn btn-secondary btn-sm" onclick="anteprima()">👁 Anteprima</button>
+          <button class="btn btn-primary" onclick="pubblica()">­ƒÜÇ Pubblica</button>
+          <button class="btn btn-secondary" onclick="nuovoArticolo()">Ô£Ü Nuovo</button>
+          <button class="btn btn-secondary btn-sm" onclick="anteprima()">­ƒæü Anteprima</button>
         </div>
         <div class="msg" id="msg-art"></div>
       </div>
@@ -167,25 +167,25 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         <pre id="preview-content" style="font-size:12px;line-height:1.7;white-space:pre-wrap;background:#f8f8f8;padding:14px;border-radius:7px;overflow-x:auto"></pre>
       </div>
       <div class="card">
-        <div class="card-title" style="display:flex;justify-content:space-between">Pubblicati <button class="btn btn-secondary btn-sm" onclick="caricaLista()">↻ Aggiorna</button></div>
-        <div id="lista-articoli"><span style="color:#bbb;font-size:13px">Clicca ↻ per caricare</span></div>
+        <div class="card-title" style="display:flex;justify-content:space-between">Pubblicati <button class="btn btn-secondary btn-sm" onclick="caricaLista()">Ôå╗ Aggiorna</button></div>
+        <div id="lista-articoli"><span style="color:#bbb;font-size:13px">Clicca Ôå╗ per caricare</span></div>
       </div>
     </div>
 
     <!-- PAGINE -->
     <div class="page" id="page-pagine">
-      <div class="page-title">📄 Pagine</div>
+      <div class="page-title">­ƒôä Pagine</div>
       <div class="card">
-        <div class="card-title" style="display:flex;justify-content:space-between">Pagine del sito <button class="btn btn-secondary btn-sm" onclick="caricaPagine()">↻ Aggiorna</button></div>
-        <div id="lista-pagine"><span style="color:#bbb;font-size:13px">Clicca ↻ per caricare</span></div>
+        <div class="card-title" style="display:flex;justify-content:space-between">Pagine del sito <button class="btn btn-secondary btn-sm" onclick="caricaPagine()">Ôå╗ Aggiorna</button></div>
+        <div id="lista-pagine"><span style="color:#bbb;font-size:13px">Clicca Ôå╗ per caricare</span></div>
       </div>
       <div class="card" id="editor-pagina" style="display:none">
         <div class="card-title">Modifica: <span id="nome-pagina" style="color:#6c63ff;text-transform:none"></span></div>
         <div class="field"><label>Titolo</label><input type="text" id="pag-titolo"></div>
         <div class="field"><label>Contenuto (Markdown)</label><textarea class="sm" id="pag-corpo"></textarea></div>
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="salvaPagina()">💾 Salva</button>
-          <button class="btn btn-secondary" onclick="chiudiPagina()">✕ Annulla</button>
+          <button class="btn btn-primary" onclick="salvaPagina()">­ƒÆ¥ Salva</button>
+          <button class="btn btn-secondary" onclick="chiudiPagina()">Ô£ò Annulla</button>
         </div>
         <div class="msg" id="msg-pag"></div>
       </div>
@@ -193,10 +193,10 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 
     <!-- MENU -->
     <div class="page" id="page-menu">
-      <div class="page-title">🧭 Menu</div>
+      <div class="page-title">­ƒº¡ Menu</div>
       <div class="card">
-        <div class="card-title" style="display:flex;justify-content:space-between">Voci menu <button class="btn btn-secondary btn-sm" onclick="caricaMenu()">↻ Aggiorna</button></div>
-        <div id="lista-menu"><span style="color:#bbb;font-size:13px">Clicca ↻ per caricare</span></div>
+        <div class="card-title" style="display:flex;justify-content:space-between">Voci menu <button class="btn btn-secondary btn-sm" onclick="caricaMenu()">Ôå╗ Aggiorna</button></div>
+        <div id="lista-menu"><span style="color:#bbb;font-size:13px">Clicca Ôå╗ per caricare</span></div>
         <div style="margin-top:16px;padding-top:14px;border-top:1px solid #f0f0f0">
           <div class="grid2">
             <div class="field"><label>Nome</label><input type="text" id="menu-nome" placeholder="es. Contatti"></div>
@@ -205,7 +205,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           <button class="btn btn-secondary btn-sm" onclick="aggiungiVoce()">+ Aggiungi voce</button>
         </div>
         <div class="btn-group" style="margin-top:12px">
-          <button class="btn btn-primary" onclick="salvaMenu()">💾 Salva menu</button>
+          <button class="btn btn-primary" onclick="salvaMenu()">­ƒÆ¥ Salva menu</button>
         </div>
         <div class="msg" id="msg-menu"></div>
       </div>
@@ -213,7 +213,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 
     <!-- CATEGORIE -->
     <div class="page" id="page-categorie">
-      <div class="page-title">🗂 Categorie</div>
+      <div class="page-title">­ƒùé Categorie</div>
       <div class="card">
         <div id="lista-categorie"></div>
         <div style="margin-top:16px;padding-top:14px;border-top:1px solid #f0f0f0">
@@ -221,7 +221,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           <button class="btn btn-secondary btn-sm" onclick="aggiungiCategoria()">+ Aggiungi</button>
         </div>
         <div class="btn-group" style="margin-top:12px">
-          <button class="btn btn-primary" onclick="salvaCategorie()">💾 Salva categorie</button>
+          <button class="btn btn-primary" onclick="salvaCategorie()">­ƒÆ¥ Salva categorie</button>
         </div>
         <div class="msg" id="msg-cat"></div>
       </div>
@@ -229,21 +229,21 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 
     <!-- TOKEN -->
     <div class="page" id="page-token">
-      <div class="page-title">🔑 Token GitHub</div>
+      <div class="page-title">­ƒöæ Token GitHub</div>
       <div class="card">
         <div class="field">
           <label>Token (ghp_...)</label>
           <div style="display:flex;gap:8px">
             <input type="password" id="token-input" placeholder="Incolla il tuo token GitHub" style="flex:1">
-            <button class="btn btn-secondary btn-sm" onclick="toggleToken()">👁</button>
+            <button class="btn btn-secondary btn-sm" onclick="toggleToken()">­ƒæü</button>
           </div>
         </div>
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="salvaToken()">💾 Salva</button>
-          <button class="btn btn-secondary" onclick="cancellaToken()">🗑 Dimentica</button>
+          <button class="btn btn-primary" onclick="salvaToken()">­ƒÆ¥ Salva</button>
+          <button class="btn btn-secondary" onclick="cancellaToken()">­ƒùæ Dimentica</button>
         </div>
         <div class="msg" id="msg-token"></div>
-        <div style="margin-top:14px;font-size:12px;color:#aaa">Il token è salvato solo nel tuo browser. <a href="https://github.com/settings/tokens/new?scopes=repo&description=CMS+Jekyll" target="_blank" style="color:#6c63ff">Crea nuovo token ↗</a></div>
+        <div style="margin-top:14px;font-size:12px;color:#aaa">Il token ├¿ salvato solo nel tuo browser. <a href="https://github.com/settings/tokens/new?scopes=repo&description=CMS+Jekyll" target="_blank" style="color:#6c63ff">Crea nuovo token Ôåù</a></div>
       </div>
     </div>
 
@@ -352,7 +352,7 @@ async function caricaDashboard(){
     if(rp.ok){const d=await rp.json();document.getElementById('stat-art').textContent=Array.isArray(d)?d.length:0;}
     const rpg=await ghGet('_pages');
     if(rpg.ok){const d=await rpg.json();document.getElementById('stat-pag').textContent=Array.isArray(d)?d.length:0;}
-    document.getElementById('stat-cat').textContent=_categorie.length||'—';
+    document.getElementById('stat-cat').textContent=_categorie.length||'ÔÇö';
     const rp2=await ghGet('_posts');
     if(rp2.ok){
       const d=await rp2.json();
@@ -360,7 +360,7 @@ async function caricaDashboard(){
       document.getElementById('dash-ultimi').innerHTML=ul.length?ul.map(f=>`
         <div class="list-row">
           <span>${f.name.replace(/\.md$/,'').replace(/^\d{4}-\d{2}-\d{2}-/,'').replace(/-/g,' ')}</span>
-          <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}');showPageById('articoli')">✏️ Modifica</button>
+          <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}');showPageById('articoli')">Ô£Å´©Å Modifica</button>
         </div>`).join(''):'<span style="color:#bbb;font-size:13px">Nessun articolo</span>';
     }
   }catch(e){console.error(e);}
@@ -371,10 +371,10 @@ function salvaToken(){
   const t=document.getElementById('token-input').value.trim();
   if(!t)return;
   localStorage.setItem('gh_token',t);
-  showMsg('msg-token','✅ Token salvato!','ok');
+  showMsg('msg-token','Ô£à Token salvato!','ok');
   document.getElementById('token-input').value='';
 }
-function cancellaToken(){localStorage.removeItem('gh_token');showMsg('msg-token','🗑 Token rimosso.','ok');}
+function cancellaToken(){localStorage.removeItem('gh_token');showMsg('msg-token','­ƒùæ Token rimosso.','ok');}
 function toggleToken(){const i=document.getElementById('token-input');i.type=i.type==='password'?'text':'password';}
 
 // UTILS
@@ -401,14 +401,14 @@ function renderCategorie(){
     <div class="cat-row">
       <div style="display:flex;gap:8px;margin-bottom:6px">
         <input type="text" value="${c.nome}" onchange="_categorie[${i}].nome=this.value;renderSelect()" style="font-weight:600;flex:1">
-        <button class="btn btn-danger btn-sm" onclick="_categorie.splice(${i},1);renderCategorie();renderSelect()">🗑</button>
+        <button class="btn btn-danger btn-sm" onclick="_categorie.splice(${i},1);renderCategorie();renderSelect()">­ƒùæ</button>
       </div>
       <input type="text" value="${c.descrizione||''}" placeholder="Descrizione..." onchange="_categorie[${i}].descrizione=this.value" style="font-size:12px">
     </div>`).join('');
 }
 function renderSelect(){
   const sel=document.getElementById('categorie');const cur=sel.value;
-  sel.innerHTML='<option value="">— Seleziona —</option>';
+  sel.innerHTML='<option value="">ÔÇö Seleziona ÔÇö</option>';
   _categorie.forEach(c=>{const o=document.createElement('option');o.value=c.nome;o.textContent=c.nome;if(c.nome===cur)o.selected=true;sel.appendChild(o);});
 }
 function aggiungiCategoria(){
@@ -417,18 +417,18 @@ function aggiungiCategoria(){
   document.getElementById('cat-nome').value='';renderCategorie();renderSelect();
 }
 async function salvaCategorie(){
-  if(!tok())return showMsg('msg-cat','⚠️ Token mancante.','err');
-  showMsg('msg-cat','⏳ Salvataggio...','');
+  if(!tok())return showMsg('msg-cat','ÔÜá´©Å Token mancante.','err');
+  showMsg('msg-cat','ÔÅ│ Salvataggio...','');
   const res=await ghPut('_data/categorie.json','Aggiorna categorie',JSON.stringify(_categorie,null,2),_catSha);
   const j=await res.json();
-  if(res.ok){_catSha=j.content.sha;showMsg('msg-cat','✅ Categorie salvate!','ok');}
-  else showMsg('msg-cat','❌ '+j.message,'err');
+  if(res.ok){_catSha=j.content.sha;showMsg('msg-cat','Ô£à Categorie salvate!','ok');}
+  else showMsg('msg-cat','ÔØî '+j.message,'err');
 }
 
 // MENU
 async function caricaMenu(){
   const res=await ghGet('_data/navigation.yml');
-  if(!res.ok)return showMsg('msg-menu','❌ Errore caricamento.','err');
+  if(!res.ok)return showMsg('msg-menu','ÔØî Errore caricamento.','err');
   const d=await res.json();_menuSha=d.sha;
   const yaml=dec(d.content);_menuVoci=[];
   let titolo='';
@@ -445,7 +445,7 @@ function renderMenu(){
     <div class="menu-row">
       <input type="text" value="${v.title}" onchange="_menuVoci[${i}].title=this.value" placeholder="Nome">
       <input type="text" value="${v.url}" onchange="_menuVoci[${i}].url=this.value" placeholder="/url/" style="font-size:12px;color:#555">
-      <button class="btn btn-danger btn-sm" onclick="_menuVoci.splice(${i},1);renderMenu()">🗑</button>
+      <button class="btn btn-danger btn-sm" onclick="_menuVoci.splice(${i},1);renderMenu()">­ƒùæ</button>
     </div>`).join('');
 }
 function aggiungiVoce(){
@@ -457,13 +457,13 @@ function aggiungiVoce(){
   renderMenu();
 }
 async function salvaMenu(){
-  if(!tok())return showMsg('msg-menu','⚠️ Token mancante.','err');
-  showMsg('msg-menu','⏳ Salvataggio...','');
+  if(!tok())return showMsg('msg-menu','ÔÜá´©Å Token mancante.','err');
+  showMsg('msg-menu','ÔÅ│ Salvataggio...','');
   let yaml='main:\n';_menuVoci.forEach(v=>{yaml+=`  - title: "${v.title}"\n    url: ${v.url}\n`;});
   const res=await ghPut('_data/navigation.yml','Aggiorna menu',yaml,_menuSha);
   const j=await res.json();
-  if(res.ok){_menuSha=j.content.sha;showMsg('msg-menu','✅ Menu salvato! Live in ~60s.','ok');}
-  else showMsg('msg-menu','❌ '+j.message,'err');
+  if(res.ok){_menuSha=j.content.sha;showMsg('msg-menu','Ô£à Menu salvato! Live in ~60s.','ok');}
+  else showMsg('msg-menu','ÔØî '+j.message,'err');
 }
 
 // PAGINE
@@ -474,7 +474,7 @@ async function caricaPagine(){
   document.getElementById('lista-pagine').innerHTML=files.map(f=>`
     <div class="list-row">
       <span>${f.name.replace(/\.md$/,'')}</span>
-      <button class="btn btn-secondary btn-sm" onclick="modificaPagina('${f.path}','${f.sha}')">✏️ Modifica</button>
+      <button class="btn btn-secondary btn-sm" onclick="modificaPagina('${f.path}','${f.sha}')">Ô£Å´©Å Modifica</button>
     </div>`).join('');
 }
 async function modificaPagina(path,sha){
@@ -491,21 +491,21 @@ async function modificaPagina(path,sha){
   document.getElementById('editor-pagina').scrollIntoView({behavior:'smooth'});
 }
 async function salvaPagina(){
-  if(!tok())return showMsg('msg-pag','⚠️ Token mancante.','err');
+  if(!tok())return showMsg('msg-pag','ÔÜá´©Å Token mancante.','err');
   const titolo=document.getElementById('pag-titolo').value.trim();
   const corpo=document.getElementById('pag-corpo').value;
   const slug=_paginaPath.split('/').pop().replace('.md','');
   const content=`---\nlayout: single\ntitle: "${titolo}"\npermalink: /${slug}/\nauthor_profile: true\n---\n\n${corpo}`;
-  showMsg('msg-pag','⏳ Salvataggio...','');
+  showMsg('msg-pag','ÔÅ│ Salvataggio...','');
   const res=await ghPut(_paginaPath,`Aggiorna pagina: ${titolo}`,content,_paginaSha);
   const j=await res.json();
-  if(res.ok){_paginaSha=j.content.sha;showMsg('msg-pag','✅ Salvata! Live in ~60s.','ok');}
-  else showMsg('msg-pag','❌ '+j.message,'err');
+  if(res.ok){_paginaSha=j.content.sha;showMsg('msg-pag','Ô£à Salvata! Live in ~60s.','ok');}
+  else showMsg('msg-pag','ÔØî '+j.message,'err');
 }
 function chiudiPagina(){document.getElementById('editor-pagina').style.display='none';}
 
 // ARTICOLI
-function slugify(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
+function slugify(s){return s.toLowerCase().replace(/[├á├í├ó]/g,'a').replace(/[├¿├®├¬]/g,'e').replace(/[├¼├¡]/g,'i').replace(/[├▓├│]/g,'o').replace(/[├╣├║]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
 function nuovoArticolo(){
   ['titolo','excerpt','teaser','tags','corpo'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ve-body').innerHTML='';
@@ -540,13 +540,13 @@ function anteprima(){
 }
 async function caricaLista(){
   if(!tok())return;
-  document.getElementById('lista-articoli').innerHTML='<span style="color:#bbb;font-size:13px">⏳ Caricamento...</span>';
+  document.getElementById('lista-articoli').innerHTML='<span style="color:#bbb;font-size:13px">ÔÅ│ Caricamento...</span>';
   const res=await ghGet('_posts');if(!res.ok)return;
   const files=await res.json();
   document.getElementById('lista-articoli').innerHTML=files.reverse().map(f=>`
     <div class="list-row">
       <span>${f.name.replace(/\.md$/,'')}</span>
-      <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}')">✏️ Modifica</button>
+      <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}')">Ô£Å´©Å Modifica</button>
     </div>`).join('');
 }
 async function modificaArticolo(path){
@@ -566,35 +566,35 @@ async function modificaArticolo(path){
   document.getElementById('corpo').value=body;
   setCorpo(body);
   window._editSha=data.sha;window._editPath=path;
-  showMsg('msg-art','✏️ Articolo caricato — modifica e pubblica.','ok');
+  showMsg('msg-art','Ô£Å´©Å Articolo caricato ÔÇö modifica e pubblica.','ok');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 async function pubblica(){
-  if(!tok())return showMsg('msg-art','⚠️ Token mancante!','err');
+  if(!tok())return showMsg('msg-art','ÔÜá´©Å Token mancante!','err');
   const titolo=document.getElementById('titolo').value.trim();
   const cat=document.getElementById('categorie').value;
   const corpo=getCorpo();
-  if(!titolo)return showMsg('msg-art','⚠️ Inserisci un titolo!','err');
-  if(!cat)return showMsg('msg-art','⚠️ Seleziona una categoria!','err');
-  if(!corpo)return showMsg('msg-art','⚠️ Scrivi il contenuto!','err');
+  if(!titolo)return showMsg('msg-art','ÔÜá´©Å Inserisci un titolo!','err');
+  if(!cat)return showMsg('msg-art','ÔÜá´©Å Seleziona una categoria!','err');
+  if(!corpo)return showMsg('msg-art','ÔÜá´©Å Scrivi il contenuto!','err');
   const data=document.getElementById('data').value;
   const filename=window._editPath||`_posts/${data}-${slugify(titolo)}.md`;
   const body={message:`${window._editSha?'Aggiorna':'Nuovo'} articolo: ${titolo}`,content:enc(buildMd())};
   if(window._editSha)body.sha=window._editSha;
-  showMsg('msg-art','⏳ Pubblicazione...','');
+  showMsg('msg-art','ÔÅ│ Pubblicazione...','');
   try{
     const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${filename}`,{method:'PUT',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
     const json=await res.json();
-    if(res.ok){showMsg('msg-art','✅ Pubblicato! Live in ~60 secondi.','ok');window._editSha=null;window._editPath=null;caricaLista();}
-    else showMsg('msg-art','❌ '+json.message,'err');
-  }catch(e){showMsg('msg-art','❌ Errore di rete.','err');}
+    if(res.ok){showMsg('msg-art','Ô£à Pubblicato! Live in ~60 secondi.','ok');window._editSha=null;window._editPath=null;caricaLista();}
+    else showMsg('msg-art','ÔØî '+json.message,'err');
+  }catch(e){showMsg('msg-art','ÔØî Errore di rete.','err');}
 }
 
 window.onload=function(){
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
   if(tok()){
     document.getElementById('token-input').value=tok();
-    document.getElementById('token-input').placeholder='✅ Token presente';
+    document.getElementById('token-input').placeholder='Ô£à Token presente';
     caricaCategorie().then(()=>{caricaDashboard();});
     caricaLista();
     caricaPagine();
