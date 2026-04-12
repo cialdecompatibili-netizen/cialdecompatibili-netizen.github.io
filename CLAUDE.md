@@ -65,7 +65,14 @@ Modificare solo navigation.yml per cambiare voci del menu.
 - Testato: @echo off, cd /d "%~dp0", comandi git, echo testo, pause.
 - Non aggiungere logica complessa.
 
-### Articoli _posts
+### Pagine _pages
+- Le pagine esistenti si modificano dal pannello admin -> Pagine -> ✏️ Modifica
+- Le pagine nuove si creano dal pannello admin -> Pagine -> ✚ Nuova pagina
+- Campi: Titolo, Permalink (es. /contatti/), Contenuto Markdown
+- Il file viene creato automaticamente in _pages/slug.md via GitHub API
+- Dopo la creazione, aggiungere la voce al menu in _data/navigation.yml
+
+
 - Formato nome: YYYY-MM-DD-titolo-con-trattini.md
 - Front matter minimo obbligatorio:
   ---
