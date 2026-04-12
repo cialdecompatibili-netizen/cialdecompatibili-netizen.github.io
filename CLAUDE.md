@@ -4,8 +4,8 @@ sito https://cialdecompatibili-netizen.github.io/
 
 ## PROGETTO
 - Stack: Jekyll + tema Minimal Mistakes (remote_theme) + GitHub Pages
-- Repo: https://github.com/cialdecompatibili-netizen/jekyll2
-- Sito live: https://cialdecompatibili-netizen.github.io/jekyll2
+- Repo: https://github.com/cialdecompatibili-netizen/cialdecompatibili-netizen.github.io
+- Sito live: https://cialdecompatibili-netizen.github.io/
 - Flusso deploy: modifiche locali -> 2-PUBBLICA.bat -> live in 60 secondi
 - OS utente: Windows, niente terminale manuale
 
