@@ -415,7 +415,7 @@ async function pubblica(){
   try{
     const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${filename}`,{method:'PUT',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
     const json=await res.json();
-    if(res.ok){showMsg('msg-art','✅ Pubblicato! Live in ~60 secondi.','ok');window._editSha=null;window._editPath=null;}
+    if(res.ok){showMsg('msg-art','✅ Pubblicato! Live in ~60 secondi.','ok');window._editSha=null;window._editPath=null;caricaLista();}
     else showMsg('msg-art','❌ '+json.message,'err');
   }catch(e){showMsg('msg-art','❌ Errore di rete.','err');}
 }
