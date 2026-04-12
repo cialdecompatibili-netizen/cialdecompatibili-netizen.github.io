@@ -468,7 +468,7 @@ async function salvaPagina(){
     const slug=titolo.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
     filePath=`_pages/${slug}.md`;
   }
-  const perm=permalink||('/'+filePath.split('/').pop().replace('.md','').replace(/^_pages\//,'')+'/');
+  const perm=permalink||('/'+filePath.split('/').pop().replace('.md','').replace(/^.*_pages\//,'')+'/');
   const content=`---\nlayout: single\ntitle: "${titolo}"\npermalink: ${perm}\nauthor_profile: true\n---\n\n${corpo}`;
   showMsg('msg-pag','⏳ Salvataggio...','');
   const res=await ghPut(filePath,`${_paginaSha?'Aggiorna':'Nuova'} pagina: ${titolo}`,content,_paginaSha||null);
@@ -538,15 +538,19 @@ async function uploadImmagine(input){
       showMsg('msg-art','❌ Upload fallito: '+j.message,'err');
     }
   };
+  // resetta il file input così lo stesso file può essere ricaricato
+  input.value='';
   reader.readAsDataURL(file);
 }
 
 function slugify(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
 function nuovoArticolo(){
   ['titolo','excerpt','teaser','tags','corpo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('vis-editor').innerHTML='';
   document.getElementById('categorie').value='';
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
   document.getElementById('preview-box').style.display='none';
+  document.getElementById('upload-preview').style.display='none';
   window._editSha=null;window._editPath=null;
   document.getElementById('msg-art').style.display='none';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -600,6 +604,7 @@ async function modificaArticolo(path){
   const tagsM=(fm?fm[1]:'').match(/tags:\n([\s\S]*?)(?=\n\w|\n---)/);
   if(tagsM)document.getElementById('tags').value=tagsM[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
   document.getElementById('corpo').value=body;
+  setCorpo(body);
   window._editSha=data.sha;window._editPath=path;
   showMsg('msg-art','✏️ Articolo caricato — modifica e pubblica.','ok');
   window.scrollTo({top:0,behavior:'smooth'});
