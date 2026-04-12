@@ -63,8 +63,19 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 .vis-toolbar button:hover{background:#6c63ff;color:white;border-color:#6c63ff}
 .vis-toolbar .sep{width:1px;background:#e0e0e0;margin:2px 2px}
 .vis-editor{min-height:260px;padding:12px;border:1.5px solid #e8e8e8;border-radius:0 0 7px 7px;font-size:14px;line-height:1.8;outline:none;background:#fff;overflow-y:auto}
-.vis-editor:focus{border-color:#6c63ff}
-</style>
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.stat-box{background:white;border-radius:10px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);text-align:center}
+.stat-num{font-size:32px;font-weight:800;color:#6c63ff}
+.stat-label{font-size:11px;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-top:2px}
+.quick-links{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.skin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.skin-opt{border:2px solid #e8e8e8;border-radius:8px;padding:8px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
+.skin-opt:hover{border-color:#6c63ff}
+.skin-opt.active{border-color:#6c63ff;background:#f0eeff;color:#6c63ff}
+.draft-badge{font-size:10px;background:#fff3cd;color:#856404;border:1px solid #ffc107;padding:2px 7px;border-radius:8px;margin-left:6px;font-weight:600}
+.tab-row{display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid #f0f0f0}
+.tab-btn{padding:8px 18px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:#aaa;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab-btn.active{color:#6c63ff;border-bottom-color:#6c63ff}
 </head>
 <body>
 
@@ -75,10 +86,14 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 
 <div class="layout">
   <nav class="sidebar">
+    <div class="nav-label">Generale</div>
+    <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">🏠</span>Dashboard</button>
     <div class="nav-label">Contenuti</div>
-    <button class="nav-item active" onclick="showPage('articoli',this)"><span class="icon">📝</span>Articoli</button>
+    <button class="nav-item" onclick="showPage('articoli',this)"><span class="icon">📝</span>Articoli</button>
+    <button class="nav-item" onclick="showPage('bozze',this)"><span class="icon">📋</span>Bozze</button>
     <button class="nav-item" onclick="showPage('pagine',this)"><span class="icon">📄</span>Pagine</button>
     <div class="nav-label">Impostazioni</div>
+    <button class="nav-item" onclick="showPage('sito',this)"><span class="icon">⚙️</span>Sito</button>
     <button class="nav-item" onclick="showPage('menu',this)"><span class="icon">🧭</span>Menu</button>
     <button class="nav-item" onclick="showPage('categorie',this)"><span class="icon">🗂</span>Categorie</button>
     <button class="nav-item" onclick="showPage('token',this)"><span class="icon">🔑</span>Token</button>
@@ -86,8 +101,28 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 
   <main class="main">
 
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">🏠 Dashboard</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="stat-art">—</div><div class="stat-label">Articoli</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-boz">—</div><div class="stat-label">Bozze</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-pag">—</div><div class="stat-label">Pagine</div></div>
+      </div>
+      <div class="quick-links">
+        <button class="btn btn-primary" onclick="showPageById('articoli')">✚ Nuovo articolo</button>
+        <button class="btn btn-secondary" onclick="showPageById('bozze')">📋 Vedi bozze</button>
+        <button class="btn btn-secondary" onclick="showPageById('sito')">⚙️ Impostazioni sito</button>
+        <a href="https://cialdecompatibili-netizen.github.io/jekyll2" target="_blank" class="btn btn-secondary">🌐 Vai al sito</a>
+      </div>
+      <div class="card">
+        <div class="card-title">Ultimi articoli pubblicati</div>
+        <div id="dash-ultimi"><span style="color:#bbb;font-size:13px">⏳ Caricamento...</span></div>
+      </div>
+    </div>
+
     <!-- ARTICOLI -->
-    <div class="page active" id="page-articoli">
+    <div class="page" id="page-articoli">
       <div class="page-title">📝 Articoli</div>
       <div class="card">
         <div class="card-title">Nuovo / Modifica articolo</div>
@@ -142,6 +177,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="pubblica()">🚀 Pubblica</button>
+          <button class="btn btn-secondary" onclick="salvaBozza()">💾 Salva bozza</button>
           <button class="btn btn-secondary" onclick="nuovoArticolo()">✚ Nuovo</button>
           <button class="btn btn-secondary btn-sm" onclick="anteprima()">👁 Anteprima</button>
         </div>
@@ -189,6 +225,46 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- BOZZE -->
+    <div class="page" id="page-bozze">
+      <div class="page-title">📋 Bozze</div>
+      <div class="card">
+        <div class="card-title" style="display:flex;justify-content:space-between">Bozze salvate <button class="btn btn-secondary btn-sm" onclick="caricaBozze()">↻ Aggiorna</button></div>
+        <div id="lista-bozze"><span style="color:#bbb;font-size:13px">Clicca ↻ per caricare</span></div>
+      </div>
+    </div>
+
+    <!-- IMPOSTAZIONI SITO -->
+    <div class="page" id="page-sito">
+      <div class="page-title">⚙️ Impostazioni sito</div>
+      <div class="card">
+        <div class="card-title">Identità</div>
+        <div class="field"><label>Titolo sito</label><input type="text" id="cfg-title" placeholder="Il mio sito"></div>
+        <div class="field"><label>Descrizione</label><input type="text" id="cfg-desc" placeholder="Descrizione breve per Google"></div>
+        <div class="field"><label>URL sito</label><input type="text" id="cfg-url" placeholder="https://..."></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Autore</div>
+        <div class="grid2">
+          <div class="field"><label>Nome</label><input type="text" id="cfg-author" placeholder="Nome Cognome"></div>
+          <div class="field"><label>Bio</label><input type="text" id="cfg-bio" placeholder="Una frase su di te"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Twitter</label><input type="text" id="cfg-twitter" placeholder="@username"></div>
+          <div class="field"><label>GitHub</label><input type="text" id="cfg-github" placeholder="username"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Aspetto</div>
+        <label style="margin-bottom:8px;display:block">Skin tema</label>
+        <div class="skin-grid" id="skin-grid"></div>
+      </div>
+      <div class="btn-group" style="margin-top:4px">
+        <button class="btn btn-primary" onclick="salvaConfig()">💾 Salva impostazioni</button>
+      </div>
+      <div class="msg" id="msg-sito"></div>
     </div>
 
     <!-- PAGINE -->
@@ -348,6 +424,156 @@ function showPage(id,btn){
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   btn.classList.add('active');
+}
+function showPageById(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active');});
+}
+
+// DASHBOARD
+async function caricaDashboard(){
+  try{
+    const [rp,rb,rpg]=await Promise.all([ghGet('_posts'),ghGet('_drafts'),ghGet('_pages')]);
+    if(rp.ok){const d=await rp.json();document.getElementById('stat-art').textContent=Array.isArray(d)?d.length:0;}
+    if(rb.ok){const d=await rb.json();document.getElementById('stat-boz').textContent=Array.isArray(d)?d.length:0;}
+    else document.getElementById('stat-boz').textContent='0';
+    if(rpg.ok){const d=await rpg.json();document.getElementById('stat-pag').textContent=Array.isArray(d)?d.length:0;}
+    // ultimi 5 articoli
+    if(rp.ok){
+      const d=await (await ghGet('_posts')).json();
+      const ul=d.reverse().slice(0,5);
+      document.getElementById('dash-ultimi').innerHTML=ul.length?ul.map(f=>`
+        <div class="list-row">
+          <span>${f.name.replace(/\.md$|^\d{4}-\d{2}-\d{2}-/g,'').replace(/-/g,' ')}</span>
+          <button class="btn btn-secondary btn-sm" onclick="modificaArticolo('${f.path}');showPageById('articoli')">✏️ Modifica</button>
+        </div>`).join(''):'<span style="color:#bbb;font-size:13px">Nessun articolo</span>';
+    }
+  }catch(e){}
+}
+
+// BOZZE
+async function caricaBozze(){
+  document.getElementById('lista-bozze').innerHTML='<span style="color:#bbb;font-size:13px">⏳ Caricamento...</span>';
+  const res=await ghGet('_drafts');
+  if(!res.ok){document.getElementById('lista-bozze').innerHTML='<span style="color:#bbb;font-size:13px">Nessuna bozza</span>';return;}
+  const files=await res.json();
+  if(!files.length){document.getElementById('lista-bozze').innerHTML='<span style="color:#bbb;font-size:13px">Nessuna bozza</span>';return;}
+  document.getElementById('lista-bozze').innerHTML=files.reverse().map(f=>`
+    <div class="list-row">
+      <span>${f.name.replace(/\.md$/,'')} <span class="draft-badge">BOZZA</span></span>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-secondary btn-sm" onclick="modificaBozza('${f.path}','${f.sha}')">✏️ Modifica</button>
+        <button class="btn btn-primary btn-sm" onclick="pubblicaBozza('${f.path}','${f.sha}','${f.name}')">🚀 Pubblica</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminaBozza('${f.path}','${f.sha}','${f.name}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+async function salvaBozza(){
+  if(!tok())return showMsg('msg-art','⚠️ Token mancante!','err');
+  const titolo=document.getElementById('titolo').value.trim();
+  if(!titolo)return showMsg('msg-art','⚠️ Inserisci un titolo!','err');
+  const data=document.getElementById('data').value;
+  const nome=`${data}-${slugify(titolo)}.md`;
+  const path=`_drafts/${nome}`;
+  // controlla se esiste già
+  let sha=null;
+  try{const c=await ghGet(path);if(c.ok){const d=await c.json();if(d&&typeof d.sha==='string')sha=d.sha;}}catch(e){}
+  const body={message:`Bozza: ${titolo}`,content:enc(buildMd())};
+  if(sha)body.sha=sha;
+  showMsg('msg-art','⏳ Salvataggio bozza...','');
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{method:'PUT',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const json=await res.json();
+  if(res.ok)showMsg('msg-art','✅ Bozza salvata in _drafts/','ok');
+  else showMsg('msg-art','❌ '+json.message,'err');
+}
+async function modificaBozza(path,sha){
+  showPageById('articoli');
+  const res=await ghGet(path);const data=await res.json();
+  const content=dec(data.content);
+  const fm=content.match(/^---\n([\s\S]*?)\n---/);
+  const body=content.replace(/^---[\s\S]*?---\n\n?/,'');
+  const get=(k)=>{const m=(fm?fm[1]:'').match(new RegExp(`${k}:\\s*"?([^"\\n]+)"?`));return m?m[1].trim():'';}
+  document.getElementById('titolo').value=get('title');
+  document.getElementById('data').value=get('date');
+  document.getElementById('excerpt').value=get('excerpt');
+  document.getElementById('teaser').value=get('teaser')||'';
+  const catM=(fm?fm[1]:'').match(/categories:\n\s*-\s*(.+)/);
+  if(catM)document.getElementById('categorie').value=catM[1].trim();
+  setCorpo(body);
+  window._editSha=data.sha;window._editPath=path;
+  showMsg('msg-art','📋 Bozza caricata — modifica e pubblica o risalva.','ok');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function pubblicaBozza(path,sha,nome){
+  const res=await ghGet(path);const data=await res.json();
+  const content=dec(data.content);
+  // sposta in _posts
+  const newPath=`_posts/${nome}`;
+  let newSha=null;
+  try{const c=await ghGet(newPath);if(c.ok){const d=await c.json();if(d&&typeof d.sha==='string')newSha=d.sha;}}catch(e){}
+  const putBody={message:`Pubblica: ${nome}`,content:enc(content)};
+  if(newSha)putBody.sha=newSha;
+  const res2=await fetch(`https://api.github.com/repos/${REPO}/contents/${newPath}`,{method:'PUT',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},body:JSON.stringify(putBody)});
+  if(!res2.ok){const j=await res2.json();alert('Errore: '+j.message);return;}
+  // elimina la bozza
+  await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{method:'DELETE',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},body:JSON.stringify({message:`Elimina bozza: ${nome}`,sha})});
+  caricaBozze();
+  alert('✅ Articolo pubblicato!');
+}
+async function eliminaBozza(path,sha,nome){
+  if(!confirm(`Eliminare la bozza "${nome}"?`))return;
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{method:'DELETE',headers:{'Authorization':`token ${tok()}`,'Content-Type':'application/json'},body:JSON.stringify({message:`Elimina bozza: ${nome}`,sha})});
+  if(res.ok)caricaBozze();
+  else alert('Errore eliminazione');
+}
+
+// IMPOSTAZIONI SITO
+const SKINS=['default','dark','mint','sunrise','aqua','neon','plum','dirt','air','contrast'];
+let _configSha=null;let _configRaw='';let _skinAttuale='default';
+function renderSkins(attuale){
+  _skinAttuale=attuale||'default';
+  document.getElementById('skin-grid').innerHTML=SKINS.map(s=>`
+    <div class="skin-opt${s===_skinAttuale?' active':''}" onclick="scegliSkin('${s}')">${s}</div>`).join('');
+}
+function scegliSkin(s){
+  _skinAttuale=s;
+  document.querySelectorAll('.skin-opt').forEach(el=>el.classList.toggle('active',el.textContent===s));
+}
+async function caricaConfig(){
+  const res=await ghGet('_config.yml');
+  if(!res.ok)return;
+  const d=await res.json();_configSha=d.sha;_configRaw=dec(d.content);
+  const get=(k)=>{const m=_configRaw.match(new RegExp(`^${k}:\\s*(.+)$`,'m'));return m?m[1].trim().replace(/^"|"$/g,''):'';}
+  document.getElementById('cfg-title').value=get('title');
+  document.getElementById('cfg-desc').value=_configRaw.match(/description:\s*>-\s*\n\s*(.+)/)?_configRaw.match(/description:\s*>-\s*\n\s*(.+)/)[1].trim():get('description');
+  document.getElementById('cfg-url').value=get('url');
+  document.getElementById('cfg-author').value=get('name');
+  document.getElementById('cfg-bio').value=get('bio');
+  document.getElementById('cfg-twitter').value=get('twitter_username');
+  document.getElementById('cfg-github').value=get('github_username');
+  renderSkins(get('minimal_mistakes_skin'));
+}
+async function salvaConfig(){
+  if(!tok())return showMsg('msg-sito','⚠️ Token mancante.','err');
+  showMsg('msg-sito','⏳ Salvataggio...','');
+  let cfg=_configRaw;
+  const set=(k,v)=>{const re=new RegExp(`^(${k}:).*$`,'m');return cfg.match(re)?cfg.replace(re,`$1 ${v}`):cfg+`\n${k}: ${v}`;}
+  cfg=set('title',`"${document.getElementById('cfg-title').value.trim()}"`);
+  cfg=set('twitter_username',document.getElementById('cfg-twitter').value.trim());
+  cfg=set('github_username',document.getElementById('cfg-github').value.trim());
+  cfg=set('minimal_mistakes_skin',_skinAttuale);
+  // autore
+  cfg=cfg.replace(/(author:\s*\n\s*name\s*:\s*).*/,`$1"${document.getElementById('cfg-author').value.trim()}"`);
+  cfg=cfg.replace(/(bio\s*:\s*").*(")/, `$1${document.getElementById('cfg-bio').value.trim()}$2`);
+  // descrizione
+  const desc=document.getElementById('cfg-desc').value.trim();
+  cfg=cfg.replace(/description:\s*>-\s*\n\s*.+/,`description: "${desc}"`);
+  const res=await ghPut('_config.yml','Aggiorna impostazioni sito',cfg,_configSha);
+  const j=await res.json();
+  if(res.ok){_configSha=j.content.sha;_configRaw=cfg;showMsg('msg-sito','✅ Salvato! Live in ~60s. (build Jekyll necessaria)','ok');}
+  else showMsg('msg-sito','❌ '+j.message,'err');
 }
 
 // TOKEN
@@ -730,6 +956,7 @@ async function pubblica(){
 window.onload=function(){
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
   initQuill();
+  renderSkins('default');
   if(tok()){
     document.getElementById('token-input').value=tok();
     document.getElementById('token-input').placeholder='✅ Token presente';
@@ -737,6 +964,8 @@ window.onload=function(){
     caricaLista();
     caricaPagine();
     caricaMenu();
+    caricaDashboard();
+    caricaConfig();
   }
 };
 </script>
