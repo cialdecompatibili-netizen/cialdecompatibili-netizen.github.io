@@ -182,7 +182,32 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
       <div class="card" id="editor-pagina" style="display:none">
         <div class="card-title">Modifica: <span id="nome-pagina" style="color:#6c63ff;text-transform:none"></span></div>
         <div class="field"><label>Titolo</label><input type="text" id="pag-titolo"></div>
-        <div class="field"><label>Contenuto (Markdown)</label><textarea class="sm" id="pag-corpo"></textarea></div>
+        <div class="field">
+          <label>Contenuto</label>
+          <div class="editor-toggle">
+            <button class="active" id="pag-btn-visuale" onclick="switchEditor('visuale','pag')">✏️ Visuale</button>
+            <button id="pag-btn-markdown" onclick="switchEditor('markdown','pag')">🔣 Markdown</button>
+          </div>
+          <div id="pag-ve-box">
+            <div class="ve-toolbar">
+              <select id="pag-ve-heading" onchange="veHeading(this.value,'pag')">
+                <option value="">Paragrafo</option>
+                <option value="h1">Titolo 1</option>
+                <option value="h2">Titolo 2</option>
+                <option value="h3">Titolo 3</option>
+              </select>
+              <button type="button" onmousedown="event.preventDefault();document.execCommand('bold')" title="Grassetto"><b>B</b></button>
+              <button type="button" onmousedown="event.preventDefault();document.execCommand('italic')" title="Corsivo"><i>I</i></button>
+              <button type="button" onmousedown="event.preventDefault();document.execCommand('underline')" title="Sottolineato"><u>U</u></button>
+              <button type="button" onmousedown="event.preventDefault();document.execCommand('strikeThrough')" title="Barrato"><s>S</s></button>
+              <button type="button" onmousedown="event.preventDefault();document.execCommand('insertUnorderedList')" title="Lista puntata">• Lista</button>
+              <button type="button" onmousedown="event.preventDefault();document.execCommand('insertOrderedList')" title="Lista num.">1. Lista</button>
+              <button type="button" onmousedown="event.preventDefault();veLink()" title="Link">🔗</button>
+            </div>
+            <div id="pag-ve-body" class="ve-body" contenteditable="true" spellcheck="false"></div>
+          </div>
+          <textarea class="sm" id="pag-corpo" style="display:none"></textarea>
+        </div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="salvaPagina()">💾 Salva</button>
           <button class="btn btn-secondary" onclick="chiudiPagina()">✕ Annulla</button>
@@ -257,13 +282,15 @@ let _menuVoci=[];let _menuSha=null;
 let _paginaPath='';let _paginaSha='';
 
 // EDITOR
-let _editorMode='visuale';
+window._editorMode='visuale';
+window._editorMode_pag='visuale';
 
-function veHeading(tag){
+function veHeading(tag,pfx){
+  pfx=pfx||'';
   if(!tag){document.execCommand('formatBlock',false,'p');}
   else{document.execCommand('formatBlock',false,tag);}
-  document.getElementById('ve-heading').value='';
-  document.getElementById('ve-body').focus();
+  document.getElementById((pfx?pfx+'-':'')+'ve-heading').value='';
+  document.getElementById((pfx?pfx+'-':'')+'ve-body').focus();
 }
 function veLink(){
   const url=prompt('URL:','https://');
@@ -272,14 +299,17 @@ function veLink(){
   if(testo)document.execCommand('insertHTML',false,'<a href="'+url+'">'+testo+'</a>');
   else document.execCommand('createLink',false,url);
 }
-function switchEditor(mode){
-  if(mode===_editorMode)return;
-  _editorMode=mode;
-  var btnV=document.getElementById('btn-visuale');
-  var btnM=document.getElementById('btn-markdown');
-  var box=document.getElementById('ve-box');
-  var ta=document.getElementById('corpo');
-  var body=document.getElementById('ve-body');
+function switchEditor(mode,pfx){
+  pfx=pfx||'';
+  const pre=pfx?pfx+'-':'';
+  const modeKey=pfx?'_editorMode_'+pfx:'_editorMode';
+  if(mode===window[modeKey])return;
+  window[modeKey]=mode;
+  var btnV=document.getElementById(pre+'btn-visuale');
+  var btnM=document.getElementById(pre+'btn-markdown');
+  var box=document.getElementById(pre+'ve-box');
+  var ta=document.getElementById(pre+'corpo');
+  var body=document.getElementById(pre+'ve-body');
   if(mode==='visuale'){
     body.innerHTML=mdToHtml(ta.value);
     box.style.display='block';
@@ -294,13 +324,16 @@ function switchEditor(mode){
     btnM.classList.add('active');
   }
 }
-function getCorpo(){
-  if(_editorMode==='visuale')return htmlToMd(document.getElementById('ve-body').innerHTML);
-  return document.getElementById('corpo').value;
+function getCorpo(pfx){
+  pfx=pfx||'';const pre=pfx?pfx+'-':'';
+  const modeKey=pfx?'_editorMode_'+pfx:'_editorMode';
+  if(window[modeKey]==='visuale')return htmlToMd(document.getElementById(pre+'ve-body').innerHTML);
+  return document.getElementById(pre+'corpo').value;
 }
-function setCorpo(md){
-  document.getElementById('corpo').value=md;
-  document.getElementById('ve-body').innerHTML=mdToHtml(md);
+function setCorpo(md,pfx){
+  pfx=pfx||'';const pre=pfx?pfx+'-':'';
+  document.getElementById(pre+'corpo').value=md;
+  document.getElementById(pre+'ve-body').innerHTML=mdToHtml(md);
 }
 function htmlToMd(html){
   return html
@@ -486,6 +519,7 @@ async function modificaPagina(path,sha){
   _paginaPath=d.path||path;_paginaSha=d.sha;
   document.getElementById('pag-titolo').value=titleMatch?titleMatch[1].trim():'';
   document.getElementById('pag-corpo').value=corpo;
+  setCorpo(corpo,'pag');
   document.getElementById('nome-pagina').textContent=path.split('/').pop();
   document.getElementById('editor-pagina').style.display='block';
   document.getElementById('editor-pagina').scrollIntoView({behavior:'smooth'});
@@ -493,7 +527,7 @@ async function modificaPagina(path,sha){
 async function salvaPagina(){
   if(!tok())return showMsg('msg-pag','⚠️ Token mancante.','err');
   const titolo=document.getElementById('pag-titolo').value.trim();
-  const corpo=document.getElementById('pag-corpo').value;
+  const corpo=getCorpo('pag');
   const slug=_paginaPath.split('/').pop().replace('.md','');
   const content=`---\nlayout: single\ntitle: "${titolo}"\npermalink: /${slug}/\nauthor_profile: true\n---\n\n${corpo}`;
   showMsg('msg-pag','⏳ Salvataggio...','');
@@ -515,7 +549,7 @@ function nuovoArticolo(){
   window._editSha=null;window._editPath=null;
   document.getElementById('msg-art').style.display='none';
   // torna sempre al visuale
-  if(_editorMode!=='visuale'){switchEditor('visuale');}
+  if(_editorMode!=='visuale'){switchEditor('visuale','');}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function buildMd(){
@@ -575,7 +609,6 @@ async function pubblica(){
   const cat=document.getElementById('categorie').value;
   const corpo=getCorpo();
   if(!titolo)return showMsg('msg-art','⚠️ Inserisci un titolo!','err');
-  if(!cat)return showMsg('msg-art','⚠️ Seleziona una categoria!','err');
   if(!corpo)return showMsg('msg-art','⚠️ Scrivi il contenuto!','err');
   const data=document.getElementById('data').value;
   const filename=window._editPath||`_posts/${data}-${slugify(titolo)}.md`;
