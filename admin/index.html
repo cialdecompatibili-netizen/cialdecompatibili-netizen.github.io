@@ -499,6 +499,7 @@ async function pubblica(){
 window.onload=function(){
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
   if(tok()){
+    document.getElementById('token-input').value=tok();
     document.getElementById('token-input').placeholder='✅ Token presente';
     caricaCategorie();
     caricaLista();
