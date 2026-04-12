@@ -104,6 +104,46 @@ Modificare solo navigation.yml per cambiare voci del menu.
 - Build fallisce su GitHub: verificare front matter articolo e nome file _posts
 - Immagini non compaiono: percorso deve essere /assets/images/nome.jpg
 
+## PANNELLO ADMIN (/admin/)
+
+### Posizione file
+- Il file admin si trova in `_pages/admin.html` (NON in `admin/index.html`)
+- Front matter obbligatorio:
+  ---
+  layout: none
+  permalink: /admin/
+  published: true
+  ---
+- CRITICO: il file DEVE stare in `_pages/` altrimenti Jekyll lo copia come
+  file statico nella _site/ senza processarlo, e GitHub Pages serve la versione
+  CDN-cached senza mai rigenerarla.
+
+### Editor visuale (senza dipendenze esterne)
+- L'editor usa contenteditable nativo + execCommand, ZERO librerie CDN
+- NON usare Quill, TinyMCE o altre librerie esterne: non si caricano in modo affidabile
+- Struttura HTML dell'editor:
+    <div id="ve-box">
+      <div class="ve-toolbar"> ... bottoni con onmousedown ... </div>
+      <div id="ve-body" class="ve-body" contenteditable="true"></div>
+    </div>
+    <textarea id="corpo" style="display:none"></textarea>
+- I bottoni della toolbar DEVONO usare `onmousedown="event.preventDefault();..."`
+  (NON onclick) altrimenti il click fa perdere il focus al contenteditable e i
+  comandi non funzionano
+- Switch visuale/markdown gestito da `switchEditor(mode)` con variabile `_editorMode`
+
+### Problema cache GitHub Pages (IMPORTANTE)
+- Se GitHub Pages serve una versione vecchia dell'admin anche dopo i push:
+  1. Il file admin era in `admin/index.html` invece che in `_pages/admin.html`
+     -> Jekyll lo copiava come statico senza rigenerarlo mai
+  2. Soluzione definitiva: spostare in `_pages/admin.html` con layout: none
+  3. Se la cache persiste su /admin/ anche dopo lo spostamento:
+     -> Temporaneamente cambiare permalink in /cms/ e pushare
+     -> Verificare che /cms/ funzioni (dimostra che Jekyll builda correttamente)
+     -> Rimettere permalink: /admin/ e pushare di nuovo
+     -> GitHub Pages crea la pagina da zero senza cache vecchia
+- Questo approccio "bypass cache via permalink temporaneo" è testato e funziona.
+
 ## PRIMA DI INIZIARE OGNI SESSIONE
 1. Leggi questo file, non chiedere "di che progetto si tratta"
 2. Il menu si modifica SOLO in _data/navigation.yml
