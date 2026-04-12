@@ -134,7 +134,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
             <button class="active" id="btn-visuale" onclick="setEditor('visuale')">✏️ Visuale</button>
             <button id="btn-markdown" onclick="setEditor('markdown')">🔣 Markdown</button>
           </div>
-          <div id="quill-box">
+          <div id="ve-box">
             <div class="ve-toolbar">
               <select onchange="document.execCommand('formatBlock',false,this.value);this.value='';document.getElementById('ve-body').focus()">
                 <option value="">Paragrafo</option>
@@ -272,12 +272,12 @@ function setEditor(mode){
   if(mode==='visuale'){
     const md=document.getElementById('corpo').value;
     document.getElementById('ve-body').innerHTML=mdToHtml(md);
-    document.getElementById('quill-box').style.display='block';
+    document.getElementById('ve-box').style.display='block';
     document.getElementById('corpo').style.display='none';
   } else {
     const html=document.getElementById('ve-body').innerHTML;
     document.getElementById('corpo').value=htmlToMd(html);
-    document.getElementById('quill-box').style.display='none';
+    document.getElementById('ve-box').style.display='none';
     document.getElementById('corpo').style.display='block';
   }
 }
@@ -576,10 +576,10 @@ async function pubblica(){
 
 window.onload=function(){
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
+  if(tok()){
+    document.getElementById('token-input').value=tok();
     document.getElementById('token-input').placeholder='✅ Token presente';
-    caricaCategorie().then(()=>{
-      caricaDashboard();
-    });
+    caricaCategorie().then(()=>{caricaDashboard();});
     caricaLista();
     caricaPagine();
     caricaMenu();
