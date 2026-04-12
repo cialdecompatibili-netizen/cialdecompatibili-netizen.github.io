@@ -72,7 +72,8 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid #eee">
       <div style="font-size:12px;font-weight:600;color:#666;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Aggiungi nuova categoria</div>
       <div class="field"><label>Nome</label><input type="text" id="nuova-cat-nome" placeholder="es. Tecnologia"></div>
-      <button class="btn btn-primary" style="width:100%" onclick="aggiungiCategoria()">+ Aggiungi e chiudi</button>
+      <button class="btn btn-primary" style="width:100%" onclick="aggiungiCategoria()">+ Aggiungi</button>
+      <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="salvaCategorie()">💾 Salva tutto su GitHub</button>
     </div>
     <div id="modal-msg" style="margin-top:10px;font-size:13px;display:none"></div>
   </div>
@@ -165,9 +166,8 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
 <script>
 const REPO='cialdecompatibili-netizen/cialdecompatibili-netizen.github.io';
 const CAT_FILE='_data/categorie.json';
-// Categorie default se il file non esiste ancora su GitHub
 const CAT_DEFAULT=[
-  {nome:'Generale',descrizione:'Articoli generali del blog'}
+  {nome:'tecnica',descrizione:'Articoli tecnici, guide e tutorial'}
 ];
 let _categorie=[];
 let _catSha=null;
@@ -181,21 +181,17 @@ function toggleToken(){const i=document.getElementById('token-input');const b=ev
 // ── CATEGORIE ──
 async function caricaCategorie(){
   const token=localStorage.getItem('gh_token');
-  if(!token){_categorie=[...CAT_DEFAULT];renderSelect();return;}
+  if(!token){_categorie=JSON.parse(JSON.stringify(CAT_DEFAULT));renderSelect();return;}
   try{
-    const res=await fetch(`https://api.github.com/repos/${REPO}/contents/_posts`,{headers:{'Authorization':`token ${token}`}});
-    if(!res.ok){_categorie=[...CAT_DEFAULT];renderSelect();return;}
-    const files=await res.json();
-    const catSet=new Set(['Generale']);
-    for(const f of files){
-      const r=await fetch(`https://api.github.com/repos/${REPO}/contents/${f.path}`,{headers:{'Authorization':`token ${token}`}});
-      const d=await r.json();
-      const content=decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
-      const m=content.match(/categories:\n\s*-\s*(.+)/);
-      if(m)catSet.add(m[1].trim());
+    const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${CAT_FILE}`,{headers:{'Authorization':`token ${token}`}});
+    if(res.ok){
+      const d=await res.json();
+      _catSha=d.sha;
+      _categorie=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+    }else{
+      _categorie=JSON.parse(JSON.stringify(CAT_DEFAULT));
     }
-    _categorie=[...catSet].map(nome=>({nome,descrizione:''}));
-  }catch(e){_categorie=[...CAT_DEFAULT];}
+  }catch(e){_categorie=JSON.parse(JSON.stringify(CAT_DEFAULT));}
   renderSelect();
 }
 
