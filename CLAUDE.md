@@ -137,12 +137,14 @@ Modificare solo navigation.yml per cambiare voci del menu.
   1. Il file admin era in `admin/index.html` invece che in `_pages/admin.html`
      -> Jekyll lo copiava come statico senza rigenerarlo mai
   2. Soluzione definitiva: spostare in `_pages/admin.html` con layout: none
-  3. Se la cache persiste su /admin/ anche dopo lo spostamento:
-     -> Temporaneamente cambiare permalink in /cms/ e pushare
-     -> Verificare che /cms/ funzioni (dimostra che Jekyll builda correttamente)
-     -> Rimettere permalink: /admin/ e pushare di nuovo
-     -> GitHub Pages crea la pagina da zero senza cache vecchia
-- Questo approccio "bypass cache via permalink temporaneo" è testato e funziona.
+### Procedura standard per aggiornare /admin/ (cache GitHub Pages)
+Ogni volta che si modifica _pages/admin.html, GitHub Pages serve la versione
+vecchia su /admin/ per via della CDN cache. La procedura SEMPRE da seguire è:
+1. Cambia permalink in /cms/ -> git add/commit/push
+2. Aspetta 2 minuti -> verifica che /cms/ mostri la versione nuova
+3. Cambia permalink in /admin/ -> git add/commit/push
+4. /admin/ ora è rigenerata da zero senza cache vecchia
+Non perdere tempo a forzare rebuild in altri modi: questo funziona sempre.
 
 ## PRIMA DI INIZIARE OGNI SESSIONE
 1. Leggi questo file, non chiedere "di che progetto si tratta"
