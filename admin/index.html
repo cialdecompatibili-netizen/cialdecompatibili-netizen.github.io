@@ -13,14 +13,13 @@ permalink: /admin/
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#222;min-height:100vh}
 header{background:#1a1a2e;color:white;padding:16px 32px;display:flex;align-items:center;justify-content:space-between}
 header h1{font-size:18px;font-weight:600;letter-spacing:.3px}
-header span{font-size:12px;opacity:.5}
 .wrap{max-width:780px;margin:32px auto;padding:0 20px 60px}
 .card{background:white;border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
 .card h2{font-size:11px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px}
 .field{margin-bottom:16px}
 label{display:block;font-size:13px;font-weight:500;color:#444;margin-bottom:5px}
-input[type=text],input[type=date],input[type=password],textarea{width:100%;padding:9px 12px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;font-family:inherit;background:#fafafa;transition:border .15s}
-input:focus,textarea:focus{outline:none;border-color:#6c63ff;background:#fff}
+input[type=text],input[type=date],input[type=password],select,textarea{width:100%;padding:9px 12px;border:1.5px solid #e5e5e5;border-radius:8px;font-size:14px;font-family:inherit;background:#fafafa;transition:border .15s;color:#222}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#6c63ff;background:#fff}
 textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13px;line-height:1.8;resize:vertical}
 .hint{font-size:11px;color:#aaa;margin-top:3px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -28,6 +27,7 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
 .btn-primary{background:#6c63ff;color:white}.btn-primary:hover{background:#5a52e0}
 .btn-secondary{background:#f0f0f0;color:#444}.btn-secondary:hover{background:#e5e5e5}
 .btn-sm{padding:7px 14px;font-size:12px}
+.btn-danger{background:#fde8e8;color:#c0392b}.btn-danger:hover{background:#fbd0d0}
 .actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 #msg{font-size:13px;padding:8px 14px;border-radius:8px;display:none}
 #msg.ok{background:#e6f9f0;color:#1a7a4a;display:block}
@@ -36,24 +36,53 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
 .token-card h2{font-size:11px;font-weight:600;color:#92400e;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
 .token-row{display:flex;gap:8px;align-items:center}
 .token-row input{flex:1;font-family:'Courier New',monospace;font-size:13px;background:#fffdf0;border-color:#fde68a}
-.token-row input:focus{border-color:#f59e0b}
 .token-actions{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
 .token-status{font-size:12px;color:#92400e;font-weight:500}
 .token-link{font-size:12px;color:#6c63ff;text-decoration:none;margin-left:auto}
-.token-link:hover{text-decoration:underline}
 .token-saved{font-size:12px;color:#1a7a4a;background:#e6f9f0;padding:4px 10px;border-radius:6px;font-weight:500}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:14px;padding:28px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.cat-item{background:#f8f8ff;border:1px solid #e8e8ff;border-radius:10px;padding:14px;margin-bottom:10px}
+.cat-item-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.cat-item-row input{margin:0}
+.cat-desc-row input{font-size:12px;color:#666;background:#fff}
+.cat-badge{font-size:10px;background:#6c63ff;color:white;padding:2px 8px;border-radius:10px;margin-left:6px}
 </style>
 </head>
 <body>
 <header>
   <h1>✍️ Admin Blog</h1>
   <div style="display:flex;align-items:center;gap:12px">
-    <span>cialdecompatibili-netizen/jekyll2</span>
-    <a href="https://cialdecompatibili-netizen.github.io/" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);color:white;text-decoration:none;font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">🌐 Vai al sito ↗</a>
+    <span style="font-size:12px;opacity:.5">cialdecompatibili-netizen</span>
+    <a href="https://cialdecompatibili-netizen.github.io/" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);color:white;text-decoration:none;font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.2)" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">🌐 Vai al sito ↗</a>
   </div>
 </header>
-<div class="wrap">
 
+<!-- Modal Categorie -->
+<div class="modal-overlay" id="modal-cat">
+  <div class="modal">
+    <div class="modal-title">
+      🗂 Gestisci categorie
+      <button class="btn btn-secondary btn-sm" onclick="chiudiModal()">✕ Chiudi</button>
+    </div>
+    <div id="lista-cat-modal"></div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #eee">
+      <div style="font-size:12px;font-weight:600;color:#666;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Aggiungi nuova categoria</div>
+      <div class="field"><label>Nome</label><input type="text" id="nuova-cat-nome" placeholder="es. Tecnologia"></div>
+      <div class="field"><label>Descrizione</label><input type="text" id="nuova-cat-desc" placeholder="es. Articoli su software e innovazione"></div>
+      <button class="btn btn-primary" style="width:100%" onclick="aggiungiCategoria()">+ Aggiungi categoria</button>
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn btn-primary" style="width:100%;background:#1a7a4a" onclick="salvaCategorie()">💾 Salva su GitHub</button>
+    </div>
+    <div id="modal-msg" style="margin-top:10px;font-size:13px;display:none"></div>
+  </div>
+</div>
+
+<div class="wrap">
   <div class="token-card">
     <h2>🔑 Token GitHub</h2>
     <div class="token-row">
@@ -67,7 +96,7 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
       <span id="token-status" class="token-status"></span>
       <a href="https://github.com/settings/tokens/new?scopes=repo&description=CMS+Jekyll" target="_blank" class="token-link">→ Crea token su GitHub</a>
     </div>
-    <div class="hint" style="margin-top:10px;color:#92400e">Il token viene salvato solo nel tuo browser, non sul server. Non condividere questa pagina con nessuno.</div>
+    <div class="hint" style="margin-top:10px;color:#92400e">Il token viene salvato solo nel tuo browser, non sul server.</div>
   </div>
 
   <div class="card">
@@ -88,9 +117,13 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
     </div>
     <div class="row2">
       <div class="field">
-        <label>Categorie</label>
-        <input type="text" id="categorie" placeholder="tecnologia, lifestyle">
-        <div class="hint">Separate da virgola</div>
+        <label>Categoria * <span style="color:#c0392b;font-size:11px">obbligatoria</span></label>
+        <div style="display:flex;gap:8px">
+          <select id="categorie" style="flex:1">
+            <option value="">— Seleziona —</option>
+          </select>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="apriModal()">⚙️ Gestisci</button>
+        </div>
       </div>
       <div class="field">
         <label>Tag</label>
@@ -104,15 +137,15 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
     <h2>SEO</h2>
     <div class="field">
       <label>Excerpt — descrizione breve per Google e social</label>
-      <input type="text" id="excerpt" placeholder="Max 160 caratteri — comparirà nei risultati di ricerca">
+      <input type="text" id="excerpt" placeholder="Max 160 caratteri">
     </div>
   </div>
 
   <div class="card">
     <h2>Contenuto</h2>
     <div class="field">
-      <textarea id="corpo" placeholder="Scrivi qui il tuo articolo in Markdown...&#10;&#10;## Titolo sezione&#10;&#10;Testo con **grassetto** e *corsivo*.&#10;&#10;- Lista puntata&#10;- Altro punto&#10;&#10;[Link](https://esempio.com)"></textarea>
-      <div class="hint">Markdown supportato — grassetto **testo**, corsivo *testo*, titoli ## Titolo</div>
+      <textarea id="corpo" placeholder="Scrivi il tuo articolo in Markdown...&#10;&#10;## Titolo sezione&#10;&#10;Testo con **grassetto** e *corsivo*."></textarea>
+      <div class="hint">Markdown supportato</div>
     </div>
   </div>
 
@@ -131,72 +164,118 @@ textarea#corpo{min-height:320px;font-family:'Courier New',monospace;font-size:13
     <h2>Anteprima file .md generato</h2>
     <pre id="preview-content" style="font-size:13px;line-height:1.7;white-space:pre-wrap;color:#333;background:#f8f8f8;padding:16px;border-radius:8px;overflow-x:auto"></pre>
   </div>
-
 </div>
+
 <script>
 const REPO='cialdecompatibili-netizen/cialdecompatibili-netizen.github.io';
+const CAT_FILE='_data/categorie.json';
+// Categorie default se il file non esiste ancora su GitHub
+const CAT_DEFAULT=[
+  {nome:'Generale',descrizione:'Articoli generali del blog'}
+];
+let _categorie=[];
+let _catSha=null;
 
-function salvaToken(){
-  const t=document.getElementById('token-input').value.trim();
-  if(!t){return;}
-  localStorage.setItem('gh_token',t);
-  document.getElementById('token-status').innerHTML='<span class="token-saved">✅ Salvato</span>';
-  document.getElementById('token-input').value='';
+// ── TOKEN ──
+function salvaToken(){const t=document.getElementById('token-input').value.trim();if(!t)return;localStorage.setItem('gh_token',t);document.getElementById('token-status').innerHTML='<span class="token-saved">✅ Salvato</span>';document.getElementById('token-input').value='';}
+function caricaToken(){const t=localStorage.getItem('gh_token');if(t){const i=document.getElementById('token-input');i.value=t;i.type='text';document.getElementById('token-status').innerHTML='<span class="token-saved">🔓 Mostrato</span>';}else{document.getElementById('token-status').textContent='Nessun token.';}}
+function cancellaToken(){localStorage.removeItem('gh_token');document.getElementById('token-input').value='';document.getElementById('token-status').textContent='🗑 Dimenticato.';}
+function toggleToken(){const i=document.getElementById('token-input');const b=event.target;if(i.type==='password'){i.type='text';b.textContent='🙈 Nascondi';}else{i.type='password';b.textContent='👁 Mostra';}}
+
+// ── CATEGORIE ──
+async function caricaCategorie(){
+  const token=localStorage.getItem('gh_token');
+  if(!token){_categorie=[...CAT_DEFAULT];renderSelect();return;}
+  try{
+    const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${CAT_FILE}`,{headers:{'Authorization':`token ${token}`}});
+    if(res.status===404){_categorie=[...CAT_DEFAULT];renderSelect();return;}
+    const data=await res.json();
+    _catSha=data.sha;
+    _categorie=JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))));
+  }catch(e){_categorie=[...CAT_DEFAULT];}
+  renderSelect();
 }
 
-function caricaToken(){
-  const t=localStorage.getItem('gh_token');
-  if(t){
-    const inp=document.getElementById('token-input');
-    inp.value=t;
-    inp.type='text';
-    document.getElementById('token-status').innerHTML='<span class="token-saved">🔓 Token mostrato</span>';
-  } else {
-    document.getElementById('token-status').textContent='Nessun token salvato.';
-  }
+function renderSelect(){
+  const sel=document.getElementById('categorie');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— Seleziona categoria —</option>';
+  _categorie.forEach(c=>{
+    const o=document.createElement('option');
+    o.value=c.nome;o.textContent=c.nome;
+    if(c.nome===cur)o.selected=true;
+    sel.appendChild(o);
+  });
 }
 
-function cancellaToken(){
-  localStorage.removeItem('gh_token');
-  document.getElementById('token-input').value='';
-  document.getElementById('token-status').textContent='🗑 Token dimenticato.';
+function apriModal(){
+  renderModalLista();
+  document.getElementById('modal-cat').classList.add('open');
+}
+function chiudiModal(){document.getElementById('modal-cat').classList.remove('open');}
+
+function renderModalLista(){
+  const el=document.getElementById('lista-cat-modal');
+  if(!_categorie.length){el.innerHTML='<p style="color:#aaa;font-size:13px">Nessuna categoria.</p>';return;}
+  el.innerHTML=_categorie.map((c,i)=>`
+    <div class="cat-item">
+      <div class="cat-item-row">
+        <input type="text" value="${c.nome}" onchange="_categorie[${i}].nome=this.value;renderSelect()" style="font-weight:600">
+        <button class="btn btn-danger btn-sm" onclick="rimuoviCategoria(${i})">🗑</button>
+      </div>
+      <div class="cat-desc-row">
+        <input type="text" value="${c.descrizione||''}" placeholder="Descrizione categoria..." onchange="_categorie[${i}].descrizione=this.value" class="cat-desc-row input">
+      </div>
+    </div>`).join('');
 }
 
-function toggleToken(){
-  const inp=document.getElementById('token-input');
-  const btn=event.target;
-  if(inp.type==='password'){inp.type='text';btn.textContent='🙈 Nascondi';}
-  else{inp.type='password';btn.textContent='👁 Mostra';}
+function aggiungiCategoria(){
+  const nome=document.getElementById('nuova-cat-nome').value.trim();
+  const desc=document.getElementById('nuova-cat-desc').value.trim();
+  if(!nome)return;
+  _categorie.push({nome,descrizione:desc});
+  document.getElementById('nuova-cat-nome').value='';
+  document.getElementById('nuova-cat-desc').value='';
+  renderModalLista();
+  renderSelect();
 }
 
-window.onload=function(){
-  document.getElementById('data').value=new Date().toISOString().split('T')[0];
-  if(localStorage.getItem('gh_token')){
-    document.getElementById('token-status').innerHTML='<span class="token-saved">✅ Token presente</span>';
-  }
-};
-
-function slugify(s){
-  return s.toLowerCase()
-    .replace(/[àáâã]/g,'a').replace(/[èéê]/g,'e')
-    .replace(/[ìíî]/g,'i').replace(/[òóô]/g,'o')
-    .replace(/[ùúû]/g,'u').replace(/[^a-z0-9\s-]/g,'')
-    .trim().replace(/\s+/g,'-');
+function rimuoviCategoria(i){
+  _categorie.splice(i,1);
+  renderModalLista();
+  renderSelect();
 }
+
+async function salvaCategorie(){
+  const token=localStorage.getItem('gh_token');
+  const mMsg=document.getElementById('modal-msg');
+  if(!token){mMsg.style.display='block';mMsg.style.color='#c0392b';mMsg.textContent='⚠️ Token mancante.';return;}
+  mMsg.style.display='block';mMsg.style.color='#666';mMsg.textContent='⏳ Salvataggio...';
+  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(_categorie,null,2))));
+  const body={message:'Aggiorna categorie',content:encoded};
+  if(_catSha)body.sha=_catSha;
+  const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${CAT_FILE}`,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const json=await res.json();
+  if(res.ok){_catSha=json.content.sha;mMsg.style.color='#1a7a4a';mMsg.textContent='✅ Categorie salvate!';}
+  else{mMsg.style.color='#c0392b';mMsg.textContent=`❌ ${json.message}`;}
+}
+
+// ── ARTICOLI ──
+function slugify(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
 
 function buildMd(){
   const titolo=document.getElementById('titolo').value.trim();
   const data=document.getElementById('data').value;
-  const cats=document.getElementById('categorie').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const cat=document.getElementById('categorie').value;
   const tags=document.getElementById('tags').value.split(',').map(s=>s.trim()).filter(Boolean);
   const excerpt=document.getElementById('excerpt').value.trim();
   const teaser=document.getElementById('teaser').value.trim();
   const corpo=document.getElementById('corpo').value;
   let fm=`---\nlayout: single\ntitle: "${titolo}"\ndate: ${data}\n`;
-  if(excerpt) fm+=`excerpt: "${excerpt}"\n`;
-  if(teaser) fm+=`header:\n  teaser: "${teaser}"\n`;
-  if(cats.length) fm+=`categories:\n${cats.map(c=>`  - ${c}`).join('\n')}\n`;
-  if(tags.length) fm+=`tags:\n${tags.map(t=>`  - ${t}`).join('\n')}\n`;
+  if(excerpt)fm+=`excerpt: "${excerpt}"\n`;
+  if(teaser)fm+=`header:\n  teaser: "${teaser}"\n`;
+  if(cat)fm+=`categories:\n  - ${cat}\n`;
+  if(tags.length)fm+=`tags:\n${tags.map(t=>`  - ${t}`).join('\n')}\n`;
   fm+=`---\n\n${corpo}`;
   return fm;
 }
@@ -211,12 +290,12 @@ function anteprima(){
 async function caricaLista(){
   const token=localStorage.getItem('gh_token');
   const el=document.getElementById('lista-articoli');
-  if(!token){el.innerHTML='<span style="color:#c0392b;font-size:13px">⚠️ Salva prima il token.</span>';return;}
+  if(!token){el.innerHTML='<span style="color:#c0392b;font-size:13px">⚠️ Token mancante.</span>';return;}
   el.innerHTML='<span style="color:#aaa;font-size:13px">⏳ Caricamento...</span>';
   const res=await fetch(`https://api.github.com/repos/${REPO}/contents/_posts`,{headers:{'Authorization':`token ${token}`}});
-  if(!res.ok){el.innerHTML='<span style="color:#c0392b;font-size:13px">❌ Errore caricamento lista.</span>';return;}
+  if(!res.ok){el.innerHTML='<span style="color:#c0392b;font-size:13px">❌ Errore.</span>';return;}
   const files=await res.json();
-  if(!files.length){el.innerHTML='<span style="color:#aaa;font-size:13px">Nessun articolo trovato.</span>';return;}
+  if(!files.length){el.innerHTML='<span style="color:#aaa;font-size:13px">Nessun articolo.</span>';return;}
   el.innerHTML=files.reverse().map(f=>`
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0">
       <span style="font-size:13px;color:#333">${f.name.replace(/\.md$/,'')}</span>
@@ -229,7 +308,6 @@ async function modificaArticolo(path,sha){
   const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`,{headers:{'Authorization':`token ${token}`}});
   const data=await res.json();
   const content=decodeURIComponent(escape(atob(data.content.replace(/\n/g,''))));
-  // Estrai front matter
   const fm=content.match(/^---\n([\s\S]*?)\n---/);
   const body=content.replace(/^---[\s\S]*?---\n\n?/,'');
   const get=(k)=>{const m=(fm?fm[1]:'').match(new RegExp(`${k}:\\s*"?([^"\\n]+)"?`));return m?m[1].trim():'';}
@@ -237,49 +315,46 @@ async function modificaArticolo(path,sha){
   document.getElementById('data').value=get('date');
   document.getElementById('excerpt').value=get('excerpt');
   document.getElementById('teaser').value=get('teaser')||'';
-  // categorie e tag
-  const cats=(fm?fm[1]:'').match(/categories:\n([\s\S]*?)(?=\n\w|\n---)/);
-  if(cats) document.getElementById('categorie').value=cats[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
+  const catMatch=(fm?fm[1]:'').match(/categories:\n\s*-\s*(.+)/);
+  if(catMatch){document.getElementById('categorie').value=catMatch[1].trim();}
   const tags=(fm?fm[1]:'').match(/tags:\n([\s\S]*?)(?=\n\w|\n---)/);
-  if(tags) document.getElementById('tags').value=tags[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
+  if(tags)document.getElementById('tags').value=tags[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
   document.getElementById('corpo').value=body;
-  // Salva sha e path per update
-  window._editSha=data.sha;
-  window._editPath=path;
-  document.getElementById('msg').className='ok';
-  document.getElementById('msg').textContent='✏️ Articolo caricato — modifica e premi Pubblica per aggiornare.';
-  document.getElementById('msg').style.display='block';
+  window._editSha=data.sha;window._editPath=path;
+  const msg=document.getElementById('msg');
+  msg.className='ok';msg.textContent='✏️ Articolo caricato — modifica e premi Pubblica.';msg.style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
-
 
 async function pubblica(){
   const msg=document.getElementById('msg');
   const token=localStorage.getItem('gh_token');
   const titolo=document.getElementById('titolo').value.trim();
+  const cat=document.getElementById('categorie').value;
   const data=document.getElementById('data').value;
   const corpo=document.getElementById('corpo').value.trim();
-  if(!token){msg.className='err';msg.textContent='⚠️ Inserisci prima il token GitHub!';msg.style.display='block';return;}
+  if(!token){msg.className='err';msg.textContent='⚠️ Token mancante!';msg.style.display='block';return;}
   if(!titolo){msg.className='err';msg.textContent='⚠️ Inserisci un titolo!';msg.style.display='block';return;}
+  if(!cat){msg.className='err';msg.textContent='⚠️ Seleziona una categoria!';msg.style.display='block';return;}
   if(!corpo){msg.className='err';msg.textContent='⚠️ Scrivi il contenuto!';msg.style.display='block';return;}
-  const filename=window._editPath || `_posts/${data}-${slugify(titolo)}.md`;
+  const filename=window._editPath||`_posts/${data}-${slugify(titolo)}.md`;
   const encoded=btoa(unescape(encodeURIComponent(buildMd())));
   const body={message:`${window._editSha?'Aggiorna':'Nuovo'} articolo: ${titolo}`,content:encoded};
-  if(window._editSha) body.sha=window._editSha;
+  if(window._editSha)body.sha=window._editSha;
   msg.className='';msg.textContent='⏳ Pubblicazione...';msg.style.display='block';
   try{
-    const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${filename}`,{
-      method:'PUT',
-      headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},
-      body:JSON.stringify(body)
-    });
+    const res=await fetch(`https://api.github.com/repos/${REPO}/contents/${filename}`,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
     const json=await res.json();
-    if(res.ok){msg.className='ok';msg.textContent='✅ Pubblicato! Sarà live in ~60 secondi.';window._editSha=null;window._editPath=null;}
-    else{msg.className='err';msg.textContent=`❌ Errore GitHub: ${json.message}`;}
-  }catch(e){
-    msg.className='err';msg.textContent='❌ Errore di rete.';
-  }
+    if(res.ok){msg.className='ok';msg.textContent='✅ Pubblicato! Live in ~60 secondi.';window._editSha=null;window._editPath=null;}
+    else{msg.className='err';msg.textContent=`❌ ${json.message}`;}
+  }catch(e){msg.className='err';msg.textContent='❌ Errore di rete.';}
 }
+
+window.onload=function(){
+  document.getElementById('data').value=new Date().toISOString().split('T')[0];
+  if(localStorage.getItem('gh_token'))document.getElementById('token-status').innerHTML='<span class="token-saved">✅ Token presente</span>';
+  caricaCategorie();
+};
 </script>
 </body>
 </html>
