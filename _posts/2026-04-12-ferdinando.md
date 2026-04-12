@@ -1,9 +1,9 @@
 ---
 layout: single
-title: "ferdinando"
+title: "ferdinandorrrrrrrrrr rrrrrrr"
 date: 2026-04-12
 categories:
   - tecnica
 ---
 
-ccccccccccc
+ssrsr rrrrrrrrr
