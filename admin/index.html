@@ -7,8 +7,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f6fa;color:#222;min-height:100vh;display:flex;flex-direction:column}
@@ -57,8 +56,11 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 .editor-toggle button:first-child{border-radius:6px 0 0 6px}
 .editor-toggle button:last-child{border-radius:0 6px 6px 0;border-left:none}
 .editor-toggle button.active{background:#6c63ff;color:white;border-color:#6c63ff}
-#quill-box .ql-toolbar{border-radius:7px 7px 0 0;border-color:#e8e8e8}
-#quill-box .ql-container{border-radius:0 0 7px 7px;border-color:#e8e8e8;min-height:260px;font-size:14px;line-height:1.8}
+.vis-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:7px 8px;background:#f5f5f5;border:1.5px solid #e8e8e8;border-bottom:none;border-radius:7px 7px 0 0}
+.vis-toolbar button{padding:4px 9px;font-size:13px;font-weight:700;border:1.5px solid #ddd;border-radius:5px;background:white;cursor:pointer;color:#333;transition:all .12s;min-width:30px}
+.vis-toolbar button:hover{background:#6c63ff;color:white;border-color:#6c63ff}
+.vis-toolbar select{padding:4px 7px;font-size:12px;border:1.5px solid #ddd;border-radius:5px;background:white;cursor:pointer}
+#vis-editor{min-height:260px;border:1.5px solid #e8e8e8;border-radius:0 0 7px 7px;padding:12px 14px;font-size:14px;line-height:1.8;outline:none;background:white;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -106,7 +108,25 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
             <button class="active" id="btn-visuale" onclick="setEditor('visuale')">✏️ Visuale</button>
             <button id="btn-markdown" onclick="setEditor('markdown')">🔣 Markdown</button>
           </div>
-          <div id="quill-box"></div>
+          <div id="quill-box">
+            <div class="vis-toolbar">
+              <select onchange="fmtBlock(this.value);this.value=''">
+                <option value="">Paragrafo</option>
+                <option value="h1">Titolo 1</option>
+                <option value="h2">Titolo 2</option>
+                <option value="h3">Titolo 3</option>
+                <option value="p">Testo</option>
+              </select>
+              <button onclick="fmt('bold')" title="Grassetto"><b>B</b></button>
+              <button onclick="fmt('italic')" title="Corsivo"><i>I</i></button>
+              <button onclick="fmt('strikeThrough')" title="Barrato"><s>S</s></button>
+              <button onclick="fmt('insertUnorderedList')" title="Lista">≡</button>
+              <button onclick="fmt('insertOrderedList')" title="Lista numerata">1.</button>
+              <button onclick="insertLink()" title="Link">🔗</button>
+              <button onclick="fmt('removeFormat')" title="Rimuovi formato">✕</button>
+            </div>
+            <div id="vis-editor" contenteditable="true"></div>
+          </div>
           <textarea class="md" id="corpo" placeholder="Scrivi in Markdown..." style="display:none"></textarea>
         </div>
         <div class="btn-group">
@@ -224,36 +244,41 @@ let _categorie=[];let _catSha=null;
 let _menuVoci=[];let _menuSha=null;
 let _paginaPath='';let _paginaSha='';
 
-// EDITOR TOGGLE
-let quill=null;let _editorMode='visuale';
-function initQuill(){
-  if(quill)return;
-  quill=new Quill('#quill-box',{theme:'snow',modules:{toolbar:[[{header:[1,2,3,false]}],'bold','italic','underline','strike',{list:'ordered'},{list:'bullet'},'link','clean']}});
+// EDITOR VISUALE (zero dipendenze esterne)
+let _editorMode='visuale';
+
+function fmt(cmd){ document.getElementById('vis-editor').focus(); document.execCommand(cmd,false,null); }
+function fmtBlock(tag){ if(!tag)return; document.getElementById('vis-editor').focus(); document.execCommand('formatBlock',false,tag); }
+function insertLink(){
+  const url=prompt('URL del link:');
+  if(!url)return;
+  document.getElementById('vis-editor').focus();
+  document.execCommand('createLink',false,url);
 }
+
 function setEditor(mode){
   _editorMode=mode;
   document.getElementById('btn-visuale').classList.toggle('active',mode==='visuale');
   document.getElementById('btn-markdown').classList.toggle('active',mode==='markdown');
   if(mode==='visuale'){
-    initQuill();
     const md=document.getElementById('corpo').value;
-    quill.root.innerHTML=mdToHtml(md);
+    document.getElementById('vis-editor').innerHTML=mdToHtml(md);
     document.getElementById('quill-box').style.display='block';
     document.getElementById('corpo').style.display='none';
   } else {
-    const html=quill?quill.root.innerHTML:'';
+    const html=document.getElementById('vis-editor').innerHTML;
     document.getElementById('corpo').value=htmlToMd(html);
     document.getElementById('quill-box').style.display='none';
     document.getElementById('corpo').style.display='block';
   }
 }
 function getCorpo(){
-  if(_editorMode==='visuale'&&quill)return htmlToMd(quill.root.innerHTML);
+  if(_editorMode==='visuale') return htmlToMd(document.getElementById('vis-editor').innerHTML);
   return document.getElementById('corpo').value;
 }
 function setCorpo(md){
   document.getElementById('corpo').value=md;
-  if(quill)quill.root.innerHTML=mdToHtml(md);
+  document.getElementById('vis-editor').innerHTML=mdToHtml(md);
 }
 function htmlToMd(html){
   return html
@@ -560,6 +585,9 @@ async function salvaTema(){
 
 window.onload=function(){
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
+  // editor visuale attivo di default
+  document.getElementById('quill-box').style.display='block';
+  document.getElementById('corpo').style.display='none';
   if(tok()){
     document.getElementById('token-input').value=tok();
     document.getElementById('token-input').placeholder='✅ Token presente';
