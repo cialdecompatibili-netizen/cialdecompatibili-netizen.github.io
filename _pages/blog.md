@@ -6,50 +6,53 @@ author_profile: false
 ---
 
 <style>
-  .post-list { list-style: none; padding: 0; }
-  .post-item { display: flex; gap: 20px; align-items: flex-start; padding: 24px 0; border-bottom: 1px solid #f0f0f0; }
-  .post-item:last-child { border-bottom: none; }
-  .post-thumb { width: 130px; height: 86px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: #f4f4f4; }
-  .post-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .post-thumb-empty { width: 100%; height: 100%; background: #f0f0f0; }
-  .post-body { flex: 1; min-width: 0; }
-  .post-meta { font-size: 12px; color: #aaa; margin-bottom: 5px; }
-  .post-meta a { color: #aaa; text-decoration: none; }
-  .post-meta a:hover { color: #333; }
-  .post-title { font-size: 17px; font-weight: 700; line-height: 1.3; margin-bottom: 7px; }
-  .post-title a { text-decoration: none; color: #111; }
-  .post-title a:hover { color: #555; }
-  .post-excerpt { font-size: 13px; color: #777; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .post-tags { margin-top: 8px; display: flex; gap: 5px; flex-wrap: wrap; }
-  .tag { font-size: 11px; font-weight: 600; color: #888; background: #f4f4f4; padding: 2px 8px; border-radius: 4px; text-decoration: none; }
-  .tag:hover { background: #eaeaea; }
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; padding: 2rem 0; }
+.blog-card { background: #fff; border: 1px solid #efefef; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .2s; }
+.blog-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
+.blog-card-img { width: 100%; height: 200px; object-fit: cover; display: block; background: #f4f2ef; }
+.blog-card-img-empty { width: 100%; height: 200px; background: linear-gradient(135deg, #f4f2ef 0%, #eae8e4 100%); display: flex; align-items: center; justify-content: center; }
+.blog-card-img-empty span { font-size: 32px; opacity: 0.3; }
+.blog-card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; gap: 0.6rem; }
+.blog-card-meta { font-size: 12px; color: #bbb; letter-spacing: 0.04em; }
+.blog-card-meta a { color: #bbb; text-decoration: none; }
+.blog-card-meta a:hover { color: #555; }
+.blog-card-title { font-size: 19px; font-weight: 600; line-height: 1.3; color: #111; text-decoration: none; display: block; }
+.blog-card-title:hover { color: #444; }
+.blog-card-excerpt { font-size: 15px; color: #777; line-height: 1.75; flex: 1; }
+.blog-card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 0.5rem; }
+.blog-card-tag { font-size: 12px; color: #888; background: #f5f4f2; padding: 3px 10px; border-radius: 20px; text-decoration: none; }
+.blog-card-tag:hover { background: #eae8e4; color: #444; }
+.blog-card-cta { margin-top: 1rem; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #111; text-decoration: none; border-bottom: 1px solid #111; padding-bottom: 2px; display: inline-block; }
+.blog-card-cta:hover { opacity: 0.5; }
+@media (max-width: 640px) {
+  .blog-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+}
 </style>
 
-<ul class="post-list">
+<div class="blog-grid">
   {% for post in site.posts %}
-  <li class="post-item">
-    <div class="post-thumb">
-      {% if post.header.teaser %}
-        <img src="{{ post.header.teaser }}" alt="{{ post.title }}">
-      {% else %}
-        <div class="post-thumb-empty"></div>
-      {% endif %}
-    </div>
-    <div class="post-body">
-      <div class="post-meta">
+  <div class="blog-card">
+    {% if post.header.teaser %}
+      <img class="blog-card-img" src="{{ post.header.teaser }}" alt="{{ post.title }}">
+    {% else %}
+      <div class="blog-card-img-empty"><span>✦</span></div>
+    {% endif %}
+    <div class="blog-card-body">
+      <div class="blog-card-meta">
         <time>{{ post.date | date: "%d %b %Y" }}</time>
         {% if post.categories.first %} · <a href="/categories/#{{ post.categories.first | slugify }}">{{ post.categories.first }}</a>{% endif %}
       </div>
-      <div class="post-title"><a href="{{ post.url }}">{{ post.title }}</a></div>
-      <div class="post-excerpt">{{ post.excerpt | strip_html | truncate: 160 }}</div>
+      <a href="{{ post.url }}" class="blog-card-title">{{ post.title }}</a>
+      <div class="blog-card-excerpt">{{ post.excerpt | strip_html | truncate: 180 }}</div>
       {% if post.tags.size > 0 %}
-      <div class="post-tags">
+      <div class="blog-card-tags">
         {% for tag in post.tags limit:3 %}
-        <a href="/tags/#{{ tag | slugify }}" class="tag">{{ tag }}</a>
+        <a href="/tags/#{{ tag | slugify }}" class="blog-card-tag">{{ tag }}</a>
         {% endfor %}
       </div>
       {% endif %}
+      <a href="{{ post.url }}" class="blog-card-cta">Leggi →</a>
     </div>
-  </li>
+  </div>
   {% endfor %}
-</ul>
+</div>
