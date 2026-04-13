@@ -2,6 +2,13 @@ sito https://cialdecompatibili-netizen.github.io/
 
 # CLAUDE.md — Jekyll + GitHub Pages (cialdecompatibili-netizen)
 
+## REGOLA: GIT PULL AUTOMATICO ALL'INIZIO DI OGNI SESSIONE
+- All'inizio di OGNI sessione Claude DEVE fare git pull automaticamente via Desktop Commander
+- Comando: start_process "git pull origin main" nella cartella C:\Users\mirco\Desktop\Jekyll + GitHub
+- Farlo PRIMA di leggere qualsiasi file, cosi i file letti sono sempre aggiornati
+- NON toccare mai 2-PUBBLICA.bat - e' di Mirco e deve restare intatto
+- NON chiedere conferma per farlo, si fa e basta
+
 ## REGOLA META — AGGIORNAMENTO AUTOMATICO
 Ogni volta che si risolve un problema nuovo, Claude DEVE aggiornare questo file
 nella sezione "SOLUZIONI GIA' RISOLTE" con: sintomo, causa, soluzione esatta.
@@ -104,13 +111,28 @@ Questa sezione viene aggiornata automaticamente da Claude ogni volta che si riso
   La funzione getCorpo() gestisce correttamente entrambe le modalita'.
 
 ---
-### PROBLEMA: git push fallisce con errori di sintassi in PowerShell
+### PROBLEMA: Editor visuale CMS non funziona (Quill CDN)
+- SINTOMO: Tab "Visuale" non carica, toolbar assente, errori console su cdnjs.cloudflare.com
+- CAUSA: Quill.js caricato da CDN esterna — se la CDN è lenta o bloccata, l'editor non parte.
+- SOLUZIONE APPLICATA: Rimosso Quill completamente. Editor visuale riscritto con
+  contenteditable + document.execCommand() nativo del browser. Zero dipendenze esterne.
+  Funziona sempre, offline incluso.
+- FILE: admin/index.html — cercare id="vis-editor" e class="vis-toolbar"
+- NON reinstallare Quill o altre librerie esterne per l'editor visuale.
 - SINTOMO: Comando con && da errore "token non valido come separatore".
 - CAUSA: PowerShell non accetta && come separatore di comandi (e' bash/cmd).
 - SOLUZIONE: Usare ; come separatore. Esempio:
     cd "C:\percorso"; git add .; git commit -m "msg"; git push
 
 ---
+
+---
+### FUNZIONALITA': Eliminazione articoli dal CMS
+- DOVE: Tab "Articoli" → lista "Pubblicati" → pulsante 🗑️ Elimina
+- COME: Chiede conferma, poi chiama API GitHub DELETE con path + sha del file
+- AGGIORNAMENTO: La lista si ricarica automaticamente dopo l'eliminazione
+- FUNZIONE JS: eliminaArticolo(path, sha, nome) in admin/index.html
+- SHA: viene passato direttamente da caricaLista() tramite f.sha restituito dall'API GitHub
 
 ## PRIMA DI INIZIARE OGNI SESSIONE
 1. Leggi questo file — non chiedere "di che progetto si tratta".
