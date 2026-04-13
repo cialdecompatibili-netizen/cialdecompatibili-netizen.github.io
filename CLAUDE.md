@@ -184,6 +184,17 @@ Questa sezione viene aggiornata automaticamente da Claude ogni volta che si riso
 - /theme-factory: styling temi per pagine HTML
 - Con questo setup Claude legge i file reali del progetto prima di suggerire modifiche
 
+---
+### PROBLEMA: blog.md ignorato — il blog mostra lista semplice invece del layout custom
+- SINTOMO: Modifichi `_pages/blog.md` (layout, bottoni, stile), fai push, ma il sito mostra sempre una lista semplice con punti elenco. Le modifiche non si vedono mai.
+- CAUSA: `_config.yml` aveva `paginate: 5` e il plugin `jekyll-paginate`. Jekyll-paginate bypassa completamente `_pages/blog.md` e genera `/blog/` con il suo layout di default.
+- SOLUZIONE:
+  1. In `_config.yml` commentare o rimuovere `paginate: 5` e `paginate_path: /page:num/`
+  2. Rimuovere `jekyll-paginate` dalla lista plugins
+  3. Push con 2-PUBBLICA.bat
+  4. Dopo la build Jekyll usa correttamente `_pages/blog.md`
+- NOTA: Senza paginazione tutti gli articoli sono visibili in lista scorrevole. Gestibile fino a 50-100 post. Se servisse paginazione in futuro, va implementata in Liquid direttamente in blog.md.
+
 ## PRIMA DI INIZIARE OGNI SESSIONE
 1. Leggi questo file — non chiedere "di che progetto si tratta".
 2. Menu -> solo _data/navigation.yml.
