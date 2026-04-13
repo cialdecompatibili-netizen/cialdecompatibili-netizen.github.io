@@ -168,6 +168,22 @@ Questa sezione viene aggiornata automaticamente da Claude ogni volta che si riso
 - FUNZIONE JS: eliminaArticolo(path, sha, nome) in admin/index.html
 - SHA: viene passato direttamente da caricaLista() tramite f.sha restituito dall'API GitHub
 
+---
+### FUNZIONALITA': CTA button nelle slide dello slider home
+- DOVE: _includes/home-content.html (ogni .lx-slide-content) + _layouts/home.html (CSS)
+- CSS classe: .lx-slide-cta — stile minimale con border-bottom, uppercase, hover opacity
+- Slide 1 → /blog/ ("Leggi il blog →"), Slide 2 → /blog/ ("Sfoglia gli articoli →"), Slide 3 → /about/ ("Scopri chi sono →")
+- Il CSS va in _layouts/home.html, i tag <a> vanno in home-content.html dopo .lx-slide-sub
+- NON aggiungere il CSS direttamente in home-content.html (non ha front matter, è HTML puro)
+
+---
+### SETUP POTENZIATO — skill attive da aprile 2026
+- Engineering skill: code review, debug, refactoring Python
+- Design skill: critique UI, miglioramenti visivi HTML/CSS
+- /web-artifacts-builder: componenti React/Tailwind complessi
+- /theme-factory: styling temi per pagine HTML
+- Con questo setup Claude legge i file reali del progetto prima di suggerire modifiche
+
 ## PRIMA DI INIZIARE OGNI SESSIONE
 1. Leggi questo file — non chiedere "di che progetto si tratta".
 2. Menu -> solo _data/navigation.yml.
