@@ -4,7 +4,7 @@ sito https://cialdecompatibili-netizen.github.io/
 
 ## PROGETTO
 - Stack: Jekyll + tema Minimal Mistakes (remote_theme) + GitHub Pages
-- Repo: https://github.com/cialdecompatibili-netizen/cialdecompatibili-netizen.github.io
+- Repo: https://github.com/cialdecompatibili-netizen/jekyll2
 - Sito live: https://cialdecompatibili-netizen.github.io/
 - Flusso deploy: modifiche locali -> 2-PUBBLICA.bat -> live in 60 secondi
 - OS utente: Windows, niente terminale manuale
@@ -65,14 +65,7 @@ Modificare solo navigation.yml per cambiare voci del menu.
 - Testato: @echo off, cd /d "%~dp0", comandi git, echo testo, pause.
 - Non aggiungere logica complessa.
 
-### Pagine _pages
-- Le pagine esistenti si modificano dal pannello admin -> Pagine -> ✏️ Modifica
-- Le pagine nuove si creano dal pannello admin -> Pagine -> ✚ Nuova pagina
-- Campi: Titolo, Permalink (es. /contatti/), Contenuto Markdown
-- Il file viene creato automaticamente in _pages/slug.md via GitHub API
-- Dopo la creazione, aggiungere la voce al menu in _data/navigation.yml
-
-
+### Articoli _posts
 - Formato nome: YYYY-MM-DD-titolo-con-trattini.md
 - Front matter minimo obbligatorio:
   ---
@@ -91,6 +84,7 @@ Modificare solo navigation.yml per cambiare voci del menu.
 
 
 ## COSA NON FARE
+- Il sito live e' https://cialdecompatibili-netizen.github.io/ (senza /jekyll2). Le sottocartelle come /admin esistono e servono per il CMS, non rimuoverle.
 - Non creare nav custom dentro i layout -> doppio menu
 - Non creare footer custom dentro i layout -> doppio footer
 - Non installare Ruby/Jekyll localmente: GitHub Pages fa il build nel cloud.
@@ -103,48 +97,6 @@ Modificare solo navigation.yml per cambiare voci del menu.
 - Bat con errori "non riconosciuto": encoding non ASCII -> riscrivere ASCII puro
 - Build fallisce su GitHub: verificare front matter articolo e nome file _posts
 - Immagini non compaiono: percorso deve essere /assets/images/nome.jpg
-
-## PANNELLO ADMIN (/admin/)
-
-### Posizione file
-- Il file admin si trova in `_pages/admin.html` (NON in `admin/index.html`)
-- Front matter obbligatorio:
-  ---
-  layout: none
-  permalink: /admin/
-  published: true
-  ---
-- CRITICO: il file DEVE stare in `_pages/` altrimenti Jekyll lo copia come
-  file statico nella _site/ senza processarlo, e GitHub Pages serve la versione
-  CDN-cached senza mai rigenerarla.
-
-### Editor visuale (senza dipendenze esterne)
-- L'editor usa contenteditable nativo + execCommand, ZERO librerie CDN
-- NON usare Quill, TinyMCE o altre librerie esterne: non si caricano in modo affidabile
-- Struttura HTML dell'editor:
-    <div id="ve-box">
-      <div class="ve-toolbar"> ... bottoni con onmousedown ... </div>
-      <div id="ve-body" class="ve-body" contenteditable="true"></div>
-    </div>
-    <textarea id="corpo" style="display:none"></textarea>
-- I bottoni della toolbar DEVONO usare `onmousedown="event.preventDefault();..."`
-  (NON onclick) altrimenti il click fa perdere il focus al contenteditable e i
-  comandi non funzionano
-- Switch visuale/markdown gestito da `switchEditor(mode)` con variabile `_editorMode`
-
-### Problema cache GitHub Pages (IMPORTANTE)
-- Se GitHub Pages serve una versione vecchia dell'admin anche dopo i push:
-  1. Il file admin era in `admin/index.html` invece che in `_pages/admin.html`
-     -> Jekyll lo copiava come statico senza rigenerarlo mai
-  2. Soluzione definitiva: spostare in `_pages/admin.html` con layout: none
-### Procedura standard per aggiornare /admin/ (cache GitHub Pages)
-Ogni volta che si modifica _pages/admin.html, GitHub Pages serve la versione
-vecchia su /admin/ per via della CDN cache. La procedura SEMPRE da seguire è:
-1. Cambia permalink in /cms/ -> git add/commit/push
-2. Aspetta 2 minuti -> verifica che /cms/ mostri la versione nuova
-3. Cambia permalink in /admin/ -> git add/commit/push
-4. /admin/ ora è rigenerata da zero senza cache vecchia
-Non perdere tempo a forzare rebuild in altri modi: questo funziona sempre.
 
 ## PRIMA DI INIZIARE OGNI SESSIONE
 1. Leggi questo file, non chiedere "di che progetto si tratta"
