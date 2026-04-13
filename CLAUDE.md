@@ -84,7 +84,10 @@ Modificare solo navigation.yml per cambiare voci del menu.
 
 
 ## COSA NON FARE
-- Il sito live e' https://cialdecompatibili-netizen.github.io/ (senza /jekyll2). Le sottocartelle come /admin esistono e servono per il CMS, non rimuoverle.
+- Il sito live e' https://cialdecompatibili-netizen.github.io/ (senza /jekyll2).
+- Il CMS e' in /cms/ (NON /admin/). URL: https://cialdecompatibili-netizen.github.io/cms/
+- La cartella cms/ NON ha front matter Jekyll (niente ---) cosi' viene servita come file statico puro, senza cache CDN. Questo e' intenzionale e necessario.
+- NON spostare mai il CMS in admin/ o aggiungere front matter Jekyll a cms/index.html.
 - Non creare nav custom dentro i layout -> doppio menu
 - Non creare footer custom dentro i layout -> doppio footer
 - Non installare Ruby/Jekyll localmente: GitHub Pages fa il build nel cloud.
