@@ -2,12 +2,13 @@ sito https://cialdecompatibili-netizen.github.io/
 
 # CLAUDE.md — Jekyll + GitHub Pages (cialdecompatibili-netizen)
 
-## REGOLA: GIT PULL AUTOMATICO ALL'INIZIO DI OGNI SESSIONE
-- All'inizio di OGNI sessione Claude DEVE fare git pull automaticamente via Desktop Commander
-- Comando: start_process "git pull origin main" nella cartella C:\Users\mirco\Desktop\Jekyll + GitHub
-- Farlo PRIMA di leggere qualsiasi file, cosi i file letti sono sempre aggiornati
-- NON toccare mai 2-PUBBLICA.bat - e' di Mirco e deve restare intatto
-- NON chiedere conferma per farlo, si fa e basta
+## REGOLA: GIT AUTOMATICO
+- INIZIO sessione: Claude fa SEMPRE git pull via Desktop Commander PRIMA di leggere qualsiasi file
+- FINE modifiche: Claude chiede a Mirco "✅ Tutto fatto! Pusho su GitHub?" e aspetta si/no
+- Se Mirco dice si: Claude fa git add + commit + push automatico, nessun click richiesto
+- Comando pull: cd "C:\Users\mirco\Desktop\Jekyll + GitHub" ; git pull origin main
+- Comando push: cd "C:\Users\mirco\Desktop\Jekyll + GitHub" ; git add . ; git commit -m aggiornamento ; git push
+- NON toccare mai 2-PUBBLICA.bat — e' di Mirco e deve restare intatto
 
 ## REGOLA META — AGGIORNAMENTO AUTOMATICO
 Ogni volta che si risolve un problema nuovo, Claude DEVE aggiornare questo file

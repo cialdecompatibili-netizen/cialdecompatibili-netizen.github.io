@@ -509,7 +509,7 @@ async function modificaArticolo(path){
   if(catM)document.getElementById('categorie').value=catM[1].trim();
   const tagsM=(fm?fm[1]:'').match(/tags:\n([\s\S]*?)(?=\n\w|\n---)/);
   if(tagsM)document.getElementById('tags').value=tagsM[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
-  document.getElementById('corpo').value=body;
+  setCorpo(body);
   window._editSha=data.sha;window._editPath=path;
   showMsg('msg-art','✏️ Articolo caricato — modifica e pubblica.','ok');
   window.scrollTo({top:0,behavior:'smooth'});
