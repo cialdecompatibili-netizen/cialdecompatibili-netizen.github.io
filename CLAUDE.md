@@ -11,7 +11,14 @@ sito https://cialdecompatibili-netizen.github.io/
 - Se il push fallisce ancora: segnalarlo a Mirco
 - NON toccare mai 2-PUBBLICA.bat e NON toccare mai 3-PULL.bat — sono di Mirco
 
-## REGOLA META — AGGIORNAMENTO AUTOMATICO
+## REGOLA: MODIFICHE CHIRURGICHE
+- Usare SEMPRE edit_block con old_string/new_string invece di riscrivere file interi
+- Prima di scrivere codice nuovo: cercare se esiste già una funzione/soluzione riutilizzabile
+- Esempio: editor pagine riusa stessa logica editor articoli (setPagCorpo/getPagCorpo speculari a setCorpo/getCorpo)
+- Se una funzione esiste già, richiamarla — non duplicarla
+- Riscrivere da zero SOLO se il codice esistente è incompatibile o la modifica supera il 70% del file
+
+
 Ogni volta che si risolve un problema nuovo, Claude DEVE aggiornare questo file
 nella sezione "SOLUZIONI GIA' RISOLTE" con: sintomo, causa, soluzione esatta.
 Questo vale sempre, senza che l'utente lo chieda. E' parte del workflow standard.
