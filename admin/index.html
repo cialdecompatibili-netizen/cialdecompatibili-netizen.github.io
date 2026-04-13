@@ -157,7 +157,33 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
       <div class="card" id="editor-pagina" style="display:none">
         <div class="card-title">Modifica: <span id="nome-pagina" style="color:#6c63ff;text-transform:none"></span></div>
         <div class="field"><label>Titolo</label><input type="text" id="pag-titolo"></div>
-        <div class="field"><label>Contenuto (Markdown)</label><textarea class="sm" id="pag-corpo"></textarea></div>
+        <div class="field">
+          <label>Contenuto</label>
+          <div class="editor-toggle">
+            <button class="active" id="btn-pag-visuale" onclick="setPagEditor('visuale')">✏️ Visuale</button>
+            <button id="btn-pag-html" onclick="setPagEditor('html')">🔣 HTML grezzo</button>
+          </div>
+          <div id="pag-quill-box">
+            <div class="vis-toolbar">
+              <select onchange="fmtPag(this.value);this.value=''">
+                <option value="">Paragrafo</option>
+                <option value="h1">Titolo 1</option>
+                <option value="h2">Titolo 2</option>
+                <option value="h3">Titolo 3</option>
+                <option value="p">Testo</option>
+              </select>
+              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('bold')" title="Grassetto"><b>B</b></button>
+              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('italic')" title="Corsivo"><i>I</i></button>
+              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('strikeThrough')" title="Barrato"><s>S</s></button>
+              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('insertUnorderedList')" title="Lista">≡</button>
+              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('insertOrderedList')" title="Lista numerata">1.</button>
+              <button onclick="insertLinkPag()" title="Link">🔗</button>
+              <button onclick="document.getElementById('pag-vis-editor').focus();document.execCommand('removeFormat')" title="Rimuovi formato">✕</button>
+            </div>
+            <div id="pag-vis-editor" contenteditable="true" style="min-height:260px;border:1.5px solid #e8e8e8;border-radius:0 0 7px 7px;padding:12px 14px;font-size:14px;line-height:1.8;outline:none;background:white;overflow-y:auto"></div>
+          </div>
+          <textarea class="sm" id="pag-corpo" style="display:none"></textarea>
+        </div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="salvaPagina()">💾 Salva</button>
           <button class="btn btn-secondary" onclick="chiudiPagina()">✕ Annulla</button>
@@ -451,6 +477,45 @@ async function salvaMenu(){
   else showMsg('msg-menu','❌ '+j.message,'err');
 }
 
+// EDITOR PAGINE
+let _pagEditorMode='visuale';
+function setPagEditor(mode){
+  _pagEditorMode=mode;
+  document.getElementById('btn-pag-visuale').classList.toggle('active',mode==='visuale');
+  document.getElementById('btn-pag-html').classList.toggle('active',mode==='html');
+  if(mode==='visuale'){
+    const html=document.getElementById('pag-corpo').value;
+    if(html) document.getElementById('pag-vis-editor').innerHTML=html;
+    document.getElementById('pag-quill-box').style.display='block';
+    document.getElementById('pag-corpo').style.display='none';
+  } else {
+    document.getElementById('pag-corpo').value=document.getElementById('pag-vis-editor').innerHTML;
+    document.getElementById('pag-quill-box').style.display='none';
+    document.getElementById('pag-corpo').style.display='block';
+  }
+}
+function getPagCorpo(){
+  if(_pagEditorMode==='visuale') return document.getElementById('pag-vis-editor').innerHTML;
+  return document.getElementById('pag-corpo').value;
+}
+function setPagCorpo(html){
+  const isLegacyMd = html && !html.trim().startsWith('<') && html.includes('\n');
+  const content = isLegacyMd ? legacyMdToHtml(html) : html;
+  document.getElementById('pag-corpo').value=content;
+  document.getElementById('pag-vis-editor').innerHTML=content;
+}
+function fmtPag(tag){
+  if(!tag)return;
+  document.getElementById('pag-vis-editor').focus();
+  document.execCommand('formatBlock',false,tag);
+}
+function insertLinkPag(){
+  const url=prompt('URL del link:');
+  if(!url)return;
+  document.getElementById('pag-vis-editor').focus();
+  document.execCommand('createLink',false,url);
+}
+
 // PAGINE
 async function caricaPagine(){
   if(!tok())return;
@@ -475,7 +540,7 @@ async function modificaHomeContent(){
   _paginaPath='_includes/home-content.html';
   _paginaSha=d.sha;
   document.getElementById('pag-titolo').value='Home';
-  document.getElementById('pag-corpo').value=dec(d.content);
+  setPagCorpo(dec(d.content));
   document.getElementById('nome-pagina').textContent='home-content.html (Home)';
   document.getElementById('editor-pagina').style.display='block';
   document.getElementById('editor-pagina').scrollIntoView({behavior:'smooth'});
@@ -488,7 +553,7 @@ async function modificaPagina(path,sha){
   const titleMatch=(fm?fm[1]:'').match(/title:\s*"?([^"\n]+)"?/);
   _paginaPath=d.path||path;_paginaSha=d.sha;
   document.getElementById('pag-titolo').value=titleMatch?titleMatch[1].trim():'';
-  document.getElementById('pag-corpo').value=corpo;
+  setPagCorpo(corpo);
   document.getElementById('nome-pagina').textContent=path.split('/').pop();
   document.getElementById('editor-pagina').style.display='block';
   document.getElementById('editor-pagina').scrollIntoView({behavior:'smooth'});
@@ -496,7 +561,7 @@ async function modificaPagina(path,sha){
 async function salvaPagina(){
   if(!tok())return showMsg('msg-pag','⚠️ Token mancante.','err');
   const titolo=document.getElementById('pag-titolo').value.trim();
-  const corpo=document.getElementById('pag-corpo').value;
+  const corpo=getPagCorpo();
   let content;
   // home-content.html = HTML puro, niente front matter
   if(_paginaPath==='_includes/home-content.html'){
