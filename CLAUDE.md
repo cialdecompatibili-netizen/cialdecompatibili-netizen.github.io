@@ -2,117 +2,121 @@ sito https://cialdecompatibili-netizen.github.io/
 
 # CLAUDE.md — Jekyll + GitHub Pages (cialdecompatibili-netizen)
 
+## REGOLA META — AGGIORNAMENTO AUTOMATICO
+Ogni volta che si risolve un problema nuovo, Claude DEVE aggiornare questo file
+nella sezione "SOLUZIONI GIA' RISOLTE" con: sintomo, causa, soluzione esatta.
+Questo vale sempre, senza che l'utente lo chieda. E' parte del workflow standard.
+
 ## PROGETTO
 - Stack: Jekyll + tema Minimal Mistakes (remote_theme) + GitHub Pages
-- Repo: https://github.com/cialdecompatibili-netizen/jekyll2
+- Repo: https://github.com/cialdecompatibili-netizen/cialdecompatibili-netizen.github.io
 - Sito live: https://cialdecompatibili-netizen.github.io/
 - Flusso deploy: modifiche locali -> 2-PUBBLICA.bat -> live in 60 secondi
 - OS utente: Windows, niente terminale manuale
+- PowerShell: usare ; come separatore comandi (non &&)
 
 ## STRUTTURA CARTELLE
-_posts/       <- articoli .md (formato: YYYY-MM-DD-titolo.md)
-_pages/       <- pagine statiche (about, 404, archivi, blog.md)
-assets/images/ <- immagini
-_config.yml   <- configurazione sito (toccare il meno possibile)
-_layouts/     <- layout custom (home.html = home luxury)
-_data/navigation.yml <- menu di navigazione
+_posts/          <- articoli .md (formato: YYYY-MM-DD-titolo.md)
+_pages/          <- pagine statiche (about, 404, archivi, blog.md)
+assets/images/   <- immagini
+_config.yml      <- configurazione sito (toccare il meno possibile)
+_layouts/        <- layout custom (home.html = home luxury)
+_data/navigation.yml  <- menu di navigazione
+_data/categorie.json  <- categorie CMS
+admin/           <- CMS custom (unico, NON duplicare)
 1-SETUP-PRIMA-VOLTA.bat  <- solo la prima volta
 2-PUBBLICA.bat           <- deploy quotidiano
 
+## CMS ADMIN
+- Unica cartella: admin/ — URL: https://cialdecompatibili-netizen.github.io/admin/
+- NON esiste piu' cms/ — e' stata rimossa. Non ricrearla.
+- admin/index.html NON ha front matter Jekyll (niente --- in cima).
+- Senza front matter Jekyll lo ignora -> GitHub Pages lo serve come statico puro.
+- Le modifiche all'admin si vedono subito, senza cache CDN.
+- Tab disponibili: Articoli, Pagine, Menu, Categorie, Token, Tema
+- Tab Tema: cambia minimal_mistakes_skin in _config.yml via API GitHub
+
 ## ARCHITETTURA PAGINE
 - Home        -> index.html (layout: home) -> _layouts/home.html
-- Blog        -> _pages/blog.md (permalink: /blog/) layout custom con lista post
+- Blog        -> _pages/blog.md (permalink: /blog/)
 - Categories  -> _pages/category-archive.md
 - Tags        -> _pages/tag-archive.md
 - About       -> _pages/about.md
 - 404         -> _pages/404.md
+Home e blog sono SEPARATI. Non confonderli.
 
-La home e il blog sono SEPARATI e DISTINTI. Non confonderli.
-
-## MENU NAVIGAZIONE (_data/navigation.yml)
-Il menu attuale e':
-  - Home        /
-  - Blog        /blog/
-  - Categories  /categories/
-  - Tags        /tags/
-  - About       /about/
-
-REGOLA CRITICA: Non inventare mai un nav custom nei layout.
-Il nav lo gestisce SEMPRE Minimal Mistakes tramite _data/navigation.yml.
-Modificare solo navigation.yml per cambiare voci del menu.
-
+## MENU (_data/navigation.yml)
+Voci attuali: Home /, Blog /blog/, Categories /categories/, Tags /tags/, About /about/
+REGOLA: il menu si modifica SOLO in _data/navigation.yml. Mai nav custom nei layout.
 
 ## LAYOUT HOME (_layouts/home.html)
-- Usa layout: default (eredita nav e footer da Minimal Mistakes)
-- Contiene SOLO il contenuto: hero, strip contatori, griglia 3 post
-- NON ha nav custom, NON ha footer custom — li fornisce gia' Minimal Mistakes
-- Se si aggiunge un nav custom dentro home.html si creano 2 nav sovrapposti -> ERRORE
+- Usa layout: default — eredita nav e footer da Minimal Mistakes automaticamente.
+- NON aggiungere nav o footer custom: verrebbero duplicati.
 
 ## REGOLE OPERATIVE
-
-### Modifiche chirurgiche
-- Tocca solo il file richiesto. Non "sistemare" _config.yml se non e' richiesto.
-- Non aggiungere plugin, layout o pagine non richiesti.
-- Se _config.yml va modificato, cambia solo la riga necessaria.
-
-### Layout custom
-- I layout custom in _layouts/ usano layout: default come base
-- NON includere mai nav o footer nei layout custom: li gestisce Minimal Mistakes
-- Il contenuto del layout va dentro il <body> che default gia' fornisce
-
-### File .bat
-- Sempre ASCII puro. Zero caratteri accentati, zero cornici grafiche.
-- Testato: @echo off, cd /d "%~dp0", comandi git, echo testo, pause.
-- Non aggiungere logica complessa.
-
-### Articoli _posts
-- Formato nome: YYYY-MM-DD-titolo-con-trattini.md
-- Front matter minimo obbligatorio:
-  ---
-  layout: single
-  title: "Titolo"
-  date: YYYY-MM-DD
-  categories: [categoria]
-  tags: [tag1, tag2]
-  ---
-- Non aggiungere campi front matter non richiesti.
-
-### _config.yml
-- Skin attuale: default (opzioni: dark, mint, sunrise, aqua, neon, plum, dirt, air)
-- remote_theme: mmistakes/minimal-mistakes (non toccare)
-- Per cambiare skin: solo la riga `minimal_mistakes_skin: NOME`
-
+- Modifiche chirurgiche: tocca SOLO il file richiesto.
+- Layout custom: usano layout: default, mai nav/footer dentro.
+- File .bat: ASCII puro, zero accentate, zero cornici grafiche.
+- Articoli: nome YYYY-MM-DD-titolo.md, front matter con layout/title/date/categories/tags.
+- _config.yml: cambiare SOLO la riga necessaria. Skin attuale: default.
+  Opzioni skin: default, dark, mint, sunrise, aqua, neon, plum, dirt, air.
+- PowerShell: separatore comandi e' ; non &&.
 
 ## COSA NON FARE
-- Il sito live e' https://cialdecompatibili-netizen.github.io/ (senza /jekyll2).
-- Il CMS e' in /admin/ E in /cms/ (entrambe attive). URL principale: https://cialdecompatibili-netizen.github.io/admin/
-- ENTRAMBE le cartelle admin/ e cms/ NON hanno front matter Jekyll (niente --- in cima al file).
-- Senza front matter, Jekyll le ignora e GitHub Pages le serve come file statici puri: le modifiche si vedono subito senza cache CDN.
-- Se si aggiunge front matter (---layout: none--- o simile) a questi file, Jekyll li processa e la CDN di GitHub li mette in cache per ore: le modifiche non si vedono. NON farlo mai.
-- Per verificare che le modifiche al CMS siano arrivate online: cambia un testo visibile (es. titolo in topbar), pusha con 2-PUBBLICA.bat, aspetta 60s, apri in finestra incognito.
-- Non creare nav custom dentro i layout -> doppio menu
-- Non creare footer custom dentro i layout -> doppio footer
-- Non installare Ruby/Jekyll localmente: GitHub Pages fa il build nel cloud.
-- Non suggerire Netlify/Vercel/CF Pages: scelta gia' fatta, GitHub Pages.
-- Non chiedere conferma per operazioni banali (leggere file, mostrare struttura).
-- Non modificare navigation.yml aggiungendo url che non esistono come pagine.
+- Non aggiungere front matter a admin/index.html (rompe la cache -> modifiche invisibili).
+- Non ricreare la cartella cms/ (rimossa, non serve).
+- Non creare nav/footer custom nei layout (doppio menu/footer).
+- Non installare Ruby/Jekyll localmente (build sul cloud GitHub).
+- Non suggerire Netlify/Vercel/CF Pages.
+- Non chiedere conferma per operazioni banali.
+- Non aggiungere url al navigation.yml che non esistono come pagine.
+- URL sito: https://cialdecompatibili-netizen.github.io/ (senza /jekyll2 o sottocartelle sito).
 
-## PROBLEMI NOTI E SOLUZIONI
-- Doppio nav/menu: qualcuno ha aggiunto un nav custom in un layout -> rimuoverlo
-- Bat con errori "non riconosciuto": encoding non ASCII -> riscrivere ASCII puro
-- Build fallisce su GitHub: verificare front matter articolo e nome file _posts
-- Immagini non compaiono: percorso deve essere /assets/images/nome.jpg
-- CMS non aggiorna le modifiche online: causa quasi certamente il front matter Jekyll
-  in admin/index.html o cms/index.html. Sintomo: cambi il file, pushy, ma il sito
-  mostra ancora la versione vecchia anche in incognito dopo 2+ minuti.
-  SOLUZIONE: rimuovere COMPLETAMENTE il blocco --- front matter --- dal file HTML
-  del CMS. Il file deve iniziare direttamente con <!DOCTYPE html>, zero righe prima.
-  Con front matter assente, Jekyll non tocca il file e GitHub Pages lo serve
-  come statico puro senza cache CDN.
+
+## SOLUZIONI GIA' RISOLTE
+Questa sezione viene aggiornata automaticamente da Claude ogni volta che si risolve un problema.
+
+---
+### PROBLEMA: CMS admin non mostra le modifiche online
+- SINTOMO: Modifichi admin/index.html, fai push, aspetti 2+ minuti, il sito mostra ancora
+  la versione vecchia — anche in finestra incognito.
+- CAUSA: admin/index.html aveva front matter Jekyll (---layout: none--- in cima).
+  Jekyll processa il file e GitHub Pages CDN lo mette in cache aggressiva per ore.
+- SOLUZIONE IMMEDIATA:
+  1. Aprire admin/index.html
+  2. Rimuovere COMPLETAMENTE il blocco --- front matter --- (tutto tra i due ---)
+  3. Il file deve iniziare con <!DOCTYPE html> come prima riga assoluta
+  4. Push con 2-PUBBLICA.bat
+  5. Aspettare 60 secondi — le modifiche compaiono subito
+- VERIFICA: Cambia un testo visibile (es. titolo topbar), pusha, apri in incognito.
+
+---
+### PROBLEMA: Editor visuale/markdown del CMS pubblica articolo vuoto
+- SINTOMO: Scrivi un articolo in modalita' visuale (Quill), clicchi Pubblica,
+  l'articolo viene creato su GitHub ma il corpo e' vuoto.
+- CAUSA: La funzione pubblica() leggeva document.getElementById('corpo').value
+  invece di getCorpo(). In modalita' visuale il testo e' nel widget Quill,
+  non nel textarea — quindi il textarea risultava vuoto.
+- SOLUZIONE: In pubblica(), sostituire:
+    const corpo = document.getElementById('corpo').value.trim();
+  con:
+    const corpo = getCorpo().trim();
+  La funzione getCorpo() gestisce correttamente entrambe le modalita'.
+
+---
+### PROBLEMA: git push fallisce con errori di sintassi in PowerShell
+- SINTOMO: Comando con && da errore "token non valido come separatore".
+- CAUSA: PowerShell non accetta && come separatore di comandi (e' bash/cmd).
+- SOLUZIONE: Usare ; come separatore. Esempio:
+    cd "C:\percorso"; git add .; git commit -m "msg"; git push
+
+---
 
 ## PRIMA DI INIZIARE OGNI SESSIONE
-1. Leggi questo file, non chiedere "di che progetto si tratta"
-2. Il menu si modifica SOLO in _data/navigation.yml
-3. I layout custom NON includono nav ne footer
-4. Home = index.html (layout: home), Blog = _pages/blog.md, sono separati
-5. Deploy = utente fa doppio click su 2-PUBBLICA.bat, non serve altro
+1. Leggi questo file — non chiedere "di che progetto si tratta".
+2. Menu -> solo _data/navigation.yml.
+3. Layout custom -> no nav/footer dentro.
+4. Home = index.html, Blog = _pages/blog.md — separati.
+5. Deploy = doppio click su 2-PUBBLICA.bat.
+6. CMS = solo admin/ — niente cms/ o altre cartelle.
+7. Se risolvi un problema nuovo -> aggiorna SOLUZIONI GIA' RISOLTE qui sopra.
