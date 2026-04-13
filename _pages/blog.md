@@ -1,7 +1,7 @@
 ---
 layout: blog-custom
 title: Blog
-permalink: /articoli/
+permalink: /blog/
 author_profile: false
 classes: wide
 ---
