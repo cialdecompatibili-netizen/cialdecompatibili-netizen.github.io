@@ -80,6 +80,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
     <button class="nav-item" onclick="showPage('categorie',this)"><span class="icon">🗂</span>Categorie</button>
     <button class="nav-item" onclick="showPage('token',this)"><span class="icon">🔑</span>Token</button>
     <button class="nav-item" onclick="showPage('tema',this)"><span class="icon">🎨</span>Tema</button>
+    <button class="nav-item" onclick="showPage('impostazioni',this)"><span class="icon">⚙️</span>Impostazioni</button>
   </nav>
 
   <main class="main">
@@ -233,6 +234,53 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         <div class="msg" id="msg-tema"></div>
         <div style="margin-top:14px;font-size:12px;color:#aaa">Il cambio tema aggiorna _config.yml e va live in ~60 secondi dopo il deploy con 2-PUBBLICA.bat.</div>
       </div>
+    </div>
+
+    <!-- IMPOSTAZIONI SITO -->
+    <div class="page" id="page-impostazioni">
+      <div class="page-title">⚙️ Impostazioni sito</div>
+
+      <div class="card">
+        <div class="card-title">Identità sito</div>
+        <div class="grid2">
+          <div class="field"><label>Titolo sito</label><input type="text" id="cfg-title" placeholder="Il mio blog"></div>
+          <div class="field"><label>Email</label><input type="text" id="cfg-email" placeholder="tu@email.com"></div>
+        </div>
+        <div class="field"><label>Descrizione</label><input type="text" id="cfg-description" placeholder="Una breve descrizione del sito..."></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Autore</div>
+        <div class="grid2">
+          <div class="field"><label>Nome autore</label><input type="text" id="cfg-author-name" placeholder="Mario Rossi"></div>
+          <div class="field"><label>Avatar (URL immagine)</label><input type="text" id="cfg-avatar" placeholder="/assets/images/bio-photo.jpg"></div>
+        </div>
+        <div class="field"><label>Bio</label><input type="text" id="cfg-bio" placeholder="Una frase su di te..."></div>
+        <div class="grid2">
+          <div class="field"><label>Twitter</label><input type="text" id="cfg-twitter" placeholder="https://twitter.com/..."></div>
+          <div class="field"><label>Instagram</label><input type="text" id="cfg-instagram" placeholder="https://instagram.com/..."></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>GitHub</label><input type="text" id="cfg-github" placeholder="https://github.com/..."></div>
+          <div class="field"><label>Sito web</label><input type="text" id="cfg-website" placeholder="https://..."></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Pagina Home</div>
+        <div class="field">
+          <label>Pagina usata come Home</label>
+          <select id="cfg-homepage">
+            <option value="">⏳ Caricamento pagine...</option>
+          </select>
+          <div class="hint" style="display:block;margin-top:5px">La pagina selezionata sarà quella mostrata all'indirizzo /. Modificala dal tab Pagine.</div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="salvaImpostazioni()">💾 Salva impostazioni</button>
+      </div>
+      <div class="msg" id="msg-cfg"></div>
     </div>
 
   </main>
@@ -595,6 +643,122 @@ async function salvaTema(){
   else showMsg('msg-tema','❌ '+j.message,'err');
 }
 
+// IMPOSTAZIONI SITO
+let _configShaImp=null;
+
+async function caricaImpostazioni(){
+  if(!tok())return;
+  const res=await ghGet('_config.yml');
+  if(!res.ok)return;
+  const d=await res.json();
+  _configShaImp=d.sha;
+  const y=dec(d.content);
+  const get=(k,def='')=>{const m=y.match(new RegExp(`^${k}:\\s*(.+)$`,'m'));return m?m[1].trim().replace(/^["']|["']$/g,''):def;};
+  document.getElementById('cfg-title').value=get('title');
+  document.getElementById('cfg-email').value=get('email');
+  // descrizione multiriga
+  const descM=y.match(/description:\s*>-\s*\n\s*(.+)/);
+  document.getElementById('cfg-description').value=descM?descM[1].trim():get('description');
+  // autore
+  document.getElementById('cfg-author-name').value=get('  name','');
+  document.getElementById('cfg-bio').value=get('  bio','');
+  document.getElementById('cfg-avatar').value=get('  avatar','');
+  // social — cerca gli url dopo i label
+  const socialMatch=(label)=>{const m=y.match(new RegExp(`label: "${label}"[\\s\\S]*?url: "?([^"\\n]+)"?`));return m?m[1].trim():'';}
+  document.getElementById('cfg-website').value=socialMatch('Website');
+  document.getElementById('cfg-twitter').value=socialMatch('Twitter');
+  document.getElementById('cfg-github').value=socialMatch('GitHub');
+  document.getElementById('cfg-instagram').value=socialMatch('Instagram');
+  // homepage — legge da _config.yml il campo cms_homepage (custom)
+  const hpM=y.match(/cms_homepage:\s*(.+)/);
+  await caricaPaginePerlHome(hpM?hpM[1].trim():'');
+}
+
+async function caricaPaginePerlHome(corrente){
+  const sel=document.getElementById('cfg-homepage');
+  sel.innerHTML='<option value="">— Seleziona —</option>';
+  try{
+    const res=await ghGet('_pages');
+    if(!res.ok)return;
+    const files=await res.json();
+    files.forEach(f=>{
+      const o=document.createElement('option');
+      o.value=f.path;
+      o.textContent=f.name.replace(/\.md$/,'');
+      if(f.path===corrente||f.name.replace(/\.md$/,'')===(corrente||'').replace('_pages/','').replace('.md',''))o.selected=true;
+      sel.appendChild(o);
+    });
+  }catch(e){}
+}
+
+async function salvaImpostazioni(){
+  if(!tok())return showMsg('msg-cfg','⚠️ Token mancante.','err');
+  showMsg('msg-cfg','⏳ Caricamento config...','');
+  const res=await ghGet('_config.yml');
+  if(!res.ok)return showMsg('msg-cfg','❌ Impossibile leggere _config.yml','err');
+  const d=await res.json();_configShaImp=d.sha;
+  let y=dec(d.content);
+
+  // titolo, email
+  y=y.replace(/^title:.*$/m,`title: ${document.getElementById('cfg-title').value.trim()}`);
+  y=y.replace(/^email:.*$/m,`email: ${document.getElementById('cfg-email').value.trim()}`);
+
+  // descrizione
+  const desc=document.getElementById('cfg-description').value.trim();
+  y=y.replace(/description:\s*>-\s*\n\s*.+/,`description: >-\n  ${desc}`);
+
+  // autore nome, bio, avatar
+  y=y.replace(/(author:\s*\n\s*name\s*:\s*)(".+?"|[^\n]+)/,`$1"${document.getElementById('cfg-author-name').value.trim()}"`);
+  y=y.replace(/(  avatar\s*:\s*)(".+?"|[^\n]+)/,`$1"${document.getElementById('cfg-avatar').value.trim()}"`);
+  y=y.replace(/(  bio\s*:\s*)(".+?"|[^\n]+)/,`$1"${document.getElementById('cfg-bio').value.trim()}"`);
+
+  // social — sostituisce gli url nei link
+  const setSocial=(label,val)=>{
+    y=y.replace(new RegExp(`(label: "${label}"[\\s\\S]*?url:\\s*)"?[^"\\n]+"?`),'$1"'+val+'"');
+  };
+  setSocial('Website',document.getElementById('cfg-website').value.trim());
+  setSocial('Twitter',document.getElementById('cfg-twitter').value.trim());
+  setSocial('GitHub',document.getElementById('cfg-github').value.trim());
+  setSocial('Instagram',document.getElementById('cfg-instagram').value.trim());
+
+  // homepage — salva path della pagina scelta come cms_homepage
+  const hp=document.getElementById('cfg-homepage').value;
+  if(y.match(/^cms_homepage:/m)) y=y.replace(/^cms_homepage:.*$/m,`cms_homepage: ${hp}`);
+  else y+=`\ncms_homepage: ${hp}\n`;
+
+  // aggiorna index.html con il permalink della pagina scelta come home
+  await aggiornaIndexHome(hp);
+
+  showMsg('msg-cfg','⏳ Salvataggio...','');
+  const putRes=await ghPut('_config.yml','Aggiorna impostazioni sito',y,_configShaImp);
+  const j=await putRes.json();
+  if(putRes.ok){
+    _configShaImp=j.content.sha;
+    showMsg('msg-cfg','✅ Impostazioni salvate! Live in ~60s dopo 2-PUBBLICA.bat.','ok');
+  } else {
+    showMsg('msg-cfg','❌ '+j.message,'err');
+  }
+}
+
+async function aggiornaIndexHome(pagePath){
+  // Legge la pagina scelta, ne estrae il permalink, e aggiorna index.html per usare quel layout
+  if(!pagePath)return;
+  try{
+    const res=await ghGet(pagePath);
+    if(!res.ok)return;
+    const d=await res.json();
+    const content=dec(d.content);
+    const layoutM=content.match(/^layout:\s*(.+)$/m);
+    const layout=layoutM?layoutM[1].trim():'home';
+    // Aggiorna index.html con il layout della pagina selezionata
+    const resIdx=await ghGet('index.html');
+    if(!resIdx.ok)return;
+    const di=await resIdx.json();
+    const newIndex=`---\nlayout: ${layout}\n---`;
+    await ghPut('index.html','Aggiorna home page',newIndex,di.sha);
+  }catch(e){}
+}
+
 window.onload=function(){
   document.getElementById('data').value=new Date().toISOString().split('T')[0];
   // editor visuale attivo di default
@@ -608,6 +772,7 @@ window.onload=function(){
     caricaPagine();
     caricaMenu();
     caricaTema();
+    caricaImpostazioni();
   }
 };
 </script>

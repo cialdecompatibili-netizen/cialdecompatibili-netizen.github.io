@@ -129,7 +129,15 @@ Questa sezione viene aggiornata automaticamente da Claude ogni volta che si riso
 ---
 
 ---
-### CAMBIO ARCHITETTURA: Corpo articoli in HTML invece di Markdown
+### FUNZIONALITÀ: Tab Impostazioni sito nel CMS
+- DOVE: Sidebar → ⚙️ Impostazioni
+- COSA SI PUÒ MODIFICARE: titolo sito, email, descrizione, nome autore, bio, avatar, social (Twitter/Instagram/GitHub/Website)
+- PAGINA HOME: dropdown che lista tutte le pagine in _pages/ — scegli quale usare come home
+  → salva il path in _config.yml come campo `cms_homepage`
+  → aggiorna automaticamente index.html con il layout della pagina scelta
+- FUNZIONE JS: caricaImpostazioni(), salvaImpostazioni(), aggiornaIndexHome()
+- IMPORTANTE: salvaImpostazioni() legge e riscrive _config.yml con regex chirurgiche, non sostituisce tutto il file
+
 - MOTIVO: Markdown causava conversioni rotte (asterischi spuri, testo che spariva passando visuale↔markdown)
 - SOLUZIONE: Il CMS ora salva il corpo degli articoli in HTML puro — Jekyll lo renderizza direttamente
 - getCorpo() restituisce innerHTML del vis-editor (HTML diretto, niente htmlToMd)
