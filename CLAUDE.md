@@ -129,7 +129,14 @@ Questa sezione viene aggiornata automaticamente da Claude ogni volta che si riso
 ---
 
 ---
-### FUNZIONALITÀ: Tab Impostazioni sito nel CMS
+### ARCHITETTURA HOME PAGE (stile WordPress)
+- _pages/home.md = la pagina home reale, modificabile dal CMS tab Pagine come tutte le altre
+- _pages/home.md ha layout: home e permalink: / — Jekyll la serve direttamente come homepage
+- _layouts/home.html = layout VUOTO con solo CSS+JS dello slider + {{ content }} — non contiene testi
+- index.html = file stub minimo con solo layout: home (Jekyll lo ignora perché home.md ha permalink: /)
+- Per cambiare home: creare/modificare _pages/home.md dal CMS → Pagine → home
+- NON rimettere contenuti dentro _layouts/home.html — deve restare solo struttura CSS+JS
+
 - DOVE: Sidebar → ⚙️ Impostazioni
 - COSA SI PUÒ MODIFICARE: titolo sito, email, descrizione, nome autore, bio, avatar, social (Twitter/Instagram/GitHub/Website)
 - PAGINA HOME: dropdown che lista tutte le pagine in _pages/ — scegli quale usare come home
