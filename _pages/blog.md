@@ -3,6 +3,7 @@ layout: single
 title: Blog
 permalink: /blog/
 author_profile: false
+classes: wide
 ---
 
 <style>
@@ -72,7 +73,7 @@ author_profile: false
       </div>
       {% endif %}
 
-      <a href="{{ post.url }}" class="blog-readmore">Leggi l'articolo →</a>
+      <a href="{{ post.url }}" class="blog-readmore">Leggi l&#39;articolo &#8594;</a>
     </div>
 
   </li>
