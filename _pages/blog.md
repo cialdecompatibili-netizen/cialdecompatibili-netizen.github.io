@@ -73,7 +73,7 @@ classes: wide
       </div>
       {% endif %}
 
-      <a href="{{ post.url }}" class="blog-readmore">Leggi l&#39;articolo &#8594;</a>
+      <a href="{{ post.url }}" class="blog-readmore">Leggi tutto &rarr;</a>
     </div>
 
   </li>
