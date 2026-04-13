@@ -8,7 +8,9 @@ sito https://cialdecompatibili-netizen.github.io/
 - Se Mirco dice si: Claude fa git add + commit + push automatico, nessun click richiesto
 - Comando pull: cd "C:\Users\mirco\Desktop\Jekyll + GitHub" ; git pull origin main
 - Comando push: cd "C:\Users\mirco\Desktop\Jekyll + GitHub" ; git add . ; git commit -m aggiornamento ; git push
-- NON toccare mai 2-PUBBLICA.bat — e' di Mirco e deve restare intatto
+- Se il push fallisce (rejected): fare pull --rebase poi push di nuovo
+- Comando push+rebase: cd "C:\Users\mirco\Desktop\Jekyll + GitHub" ; git pull origin main --rebase ; git push
+- NON toccare mai 2-PUBBLICA.bat e NON toccare mai 3-PULL.bat — sono di Mirco
 
 ## REGOLA META — AGGIORNAMENTO AUTOMATICO
 Ogni volta che si risolve un problema nuovo, Claude DEVE aggiornare questo file
@@ -126,6 +128,14 @@ Questa sezione viene aggiornata automaticamente da Claude ogni volta che si riso
     cd "C:\percorso"; git add .; git commit -m "msg"; git push
 
 ---
+
+---
+### PROBLEMA: Editor visuale vuoto quando si clicca Modifica articolo
+- SINTOMO: Clicchi "Modifica" su un articolo, il testo appare solo in Markdown.
+  Se sei in modalita' Visuale il vis-editor e' vuoto. Passando da Markdown a Visuale il testo sparisce.
+- CAUSA: modificaArticolo() scriveva il corpo solo nel textarea, non nel vis-editor.
+- SOLUZIONE: Sostituire document.getElementById('corpo').value=body con setCorpo(body).
+  La funzione setCorpo() aggiorna sia il textarea che il vis-editor insieme.
 
 ---
 ### FUNZIONALITA': Eliminazione articoli dal CMS
