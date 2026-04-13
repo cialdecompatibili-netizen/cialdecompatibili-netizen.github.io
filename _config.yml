@@ -109,12 +109,6 @@ defaults:
     values:
       layout: single
       author_profile: true
-  # blog page — layout custom, non sovrascrivere
-  - scope:
-      path: "_pages/blog.md"
-    values:
-      layout: blog-custom
-      author_profile: false
 
 category_archive:
   type: liquid

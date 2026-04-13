@@ -195,6 +195,23 @@ Questa sezione viene aggiornata automaticamente da Claude ogni volta che si riso
   4. Dopo la build Jekyll usa correttamente `_pages/blog.md`
 - NOTA: Senza paginazione tutti gli articoli sono visibili in lista scorrevole. Gestibile fino a 50-100 post. Se servisse paginazione in futuro, va implementata in Liquid direttamente in blog.md.
 
+---
+### PROBLEMA: /blog/ sempre intercettato da Jekyll — layout custom ignorato
+- SINTOMO: Modifichi _pages/blog.md (layout, bottoni, stile), fai push, ma /blog/ mostra sempre la lista semplice di Minimal Mistakes. Anche rimuovendo jekyll-paginate il problema persiste.
+- CAUSA: Minimal Mistakes intercetta il path /blog/ a livello di tema e lo gestisce internamente. Il front matter di blog.md viene ignorato per quel permalink specifico.
+- SOLUZIONE FUNZIONANTE: Cambiare il permalink da /blog/ a /articoli/ (o qualsiasi altro path non riservato da MM)
+  1. In _pages/blog.md: cambiare permalink: /blog/ → permalink: /articoli/
+  2. In _data/navigation.yml: cambiare url: /blog/ → url: /articoli/
+  3. Push con 2-PUBBLICA.bat
+  4. Il layout custom viene rispettato su /articoli/
+- COSA NON FUNZIONA:
+  - Cambiare layout nel front matter di blog.md (sovrascrive i defaults ma MM intercetta lo stesso)
+  - Aggiungere eccezioni nei defaults di _config.yml
+  - Creare layout blog-custom.html personalizzato (MM bypassa comunque /blog/)
+  - Rimuovere jekyll-paginate (non era quello il problema)
+- STATO ATTUALE: Blog accessibile su /articoli/ con layout bello, bottone "Leggi tutto →", immagini, categorie, tag.
+- URL CORRETTO: https://cialdecompatibili-netizen.github.io/articoli/
+
 ## PRIMA DI INIZIARE OGNI SESSIONE
 1. Leggi questo file — non chiedere "di che progetto si tratta".
 2. Menu -> solo _data/navigation.yml.
