@@ -1,15 +1,14 @@
 sito https://cialdecompatibili-netizen.github.io/
 
 # CLAUDE.md — Jekyll + GitHub Pages (cialdecompatibili-netizen)
+# 💜 Ciao Mirco! Bentornato a casa. Questo è il tuo spazio, tutto sotto controllo.
 
 ## REGOLA: GIT AUTOMATICO
-- INIZIO sessione: Claude fa SEMPRE git pull via Desktop Commander PRIMA di leggere qualsiasi file
+- INIZIO sessione: NON fare pull automatico — è inutile nella maggior parte dei casi
 - FINE modifiche: Claude chiede a Mirco "✅ Tutto fatto! Pusho su GitHub?" e aspetta si/no
-- Se Mirco dice si: Claude fa git add + commit + push automatico, nessun click richiesto
-- Comando pull: cd "C:\Users\mirco\Desktop\Jekyll + GitHub" ; git pull origin main
-- Comando push: cd "C:\Users\mirco\Desktop\Jekyll + GitHub" ; git add . ; git commit -m aggiornamento ; git push
-- Se il push fallisce (rejected): fare pull --rebase poi push di nuovo
-- Comando push+rebase: cd "C:\Users\mirco\Desktop\Jekyll + GitHub" ; git pull origin main --rebase ; git push
+- Se Mirco dice si: Claude fa pull --rebase + push automatico (così evita conflitti)
+- Comando push: cd "C:\Users\mirco\Desktop\Jekyll + GitHub" ; git pull origin main --rebase ; git add . ; git commit -m aggiornamento ; git push
+- Se il push fallisce ancora: segnalarlo a Mirco
 - NON toccare mai 2-PUBBLICA.bat e NON toccare mai 3-PULL.bat — sono di Mirco
 
 ## REGOLA META — AGGIORNAMENTO AUTOMATICO
@@ -130,12 +129,14 @@ Questa sezione viene aggiornata automaticamente da Claude ogni volta che si riso
 ---
 
 ---
-### PROBLEMA: Editor visuale vuoto quando si clicca Modifica articolo
-- SINTOMO: Clicchi "Modifica" su un articolo, il testo appare solo in Markdown.
-  Se sei in modalita' Visuale il vis-editor e' vuoto. Passando da Markdown a Visuale il testo sparisce.
-- CAUSA: modificaArticolo() scriveva il corpo solo nel textarea, non nel vis-editor.
-- SOLUZIONE: Sostituire document.getElementById('corpo').value=body con setCorpo(body).
-  La funzione setCorpo() aggiorna sia il textarea che il vis-editor insieme.
+### CAMBIO ARCHITETTURA: Corpo articoli in HTML invece di Markdown
+- MOTIVO: Markdown causava conversioni rotte (asterischi spuri, testo che spariva passando visuale↔markdown)
+- SOLUZIONE: Il CMS ora salva il corpo degli articoli in HTML puro — Jekyll lo renderizza direttamente
+- getCorpo() restituisce innerHTML del vis-editor (HTML diretto, niente htmlToMd)
+- setCorpo(html) carica HTML nel vis-editor — se il contenuto è legacy Markdown usa legacyMdToHtml() per visualizzarlo
+- buildContent() (ex buildMd()) salva HTML grezzo nel file .md dopo il front matter YAML
+- htmlToMd() e mdToHtml() RIMOSSE — non servono più
+- Il tab "Markdown" è stato rinominato "HTML grezzo" — mostra l'HTML del vis-editor
 
 ---
 ### FUNZIONALITA': Eliminazione articoli dal CMS

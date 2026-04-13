@@ -106,7 +106,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
           <label>Contenuto</label>
           <div class="editor-toggle">
             <button class="active" id="btn-visuale" onclick="setEditor('visuale')">✏️ Visuale</button>
-            <button id="btn-markdown" onclick="setEditor('markdown')">🔣 Markdown</button>
+            <button id="btn-markdown" onclick="setEditor('markdown')">🔣 HTML grezzo</button>
           </div>
           <div id="quill-box">
             <div class="vis-toolbar">
@@ -127,7 +127,7 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
             </div>
             <div id="vis-editor" contenteditable="true"></div>
           </div>
-          <textarea class="md" id="corpo" placeholder="Scrivi in Markdown..." style="display:none"></textarea>
+          <textarea class="md" id="corpo" placeholder="HTML grezzo..." style="display:none"></textarea>
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="pubblica()">🚀 Pubblica</button>
@@ -261,42 +261,31 @@ function setEditor(mode){
   document.getElementById('btn-visuale').classList.toggle('active',mode==='visuale');
   document.getElementById('btn-markdown').classList.toggle('active',mode==='markdown');
   if(mode==='visuale'){
-    const md=document.getElementById('corpo').value;
-    document.getElementById('vis-editor').innerHTML=mdToHtml(md);
+    // Sincronizza da textarea HTML a vis-editor
+    const html=document.getElementById('corpo').value;
+    if(html) document.getElementById('vis-editor').innerHTML=html;
     document.getElementById('quill-box').style.display='block';
     document.getElementById('corpo').style.display='none';
   } else {
-    const html=document.getElementById('vis-editor').innerHTML;
-    document.getElementById('corpo').value=htmlToMd(html);
+    // Sincronizza da vis-editor a textarea (mostra HTML grezzo)
+    document.getElementById('corpo').value=document.getElementById('vis-editor').innerHTML;
     document.getElementById('quill-box').style.display='none';
     document.getElementById('corpo').style.display='block';
   }
 }
 function getCorpo(){
-  if(_editorMode==='visuale') return htmlToMd(document.getElementById('vis-editor').innerHTML);
+  if(_editorMode==='visuale') return document.getElementById('vis-editor').innerHTML;
   return document.getElementById('corpo').value;
 }
-function setCorpo(md){
-  document.getElementById('corpo').value=md;
-  document.getElementById('vis-editor').innerHTML=mdToHtml(md);
+function setCorpo(html){
+  // html può essere HTML puro (nuovi articoli) o Markdown legacy — gestiamo entrambi
+  const isLegacyMd = html && !html.trim().startsWith('<') && html.includes('\n');
+  const content = isLegacyMd ? legacyMdToHtml(html) : html;
+  document.getElementById('corpo').value=content;
+  document.getElementById('vis-editor').innerHTML=content;
 }
-function htmlToMd(html){
-  return html
-    .replace(/<h1[^>]*>(.*?)<\/h1>/gi,'# $1\n')
-    .replace(/<h2[^>]*>(.*?)<\/h2>/gi,'## $1\n')
-    .replace(/<h3[^>]*>(.*?)<\/h3>/gi,'### $1\n')
-    .replace(/<strong[^>]*>(.*?)<\/strong>/gi,'**$1**')
-    .replace(/<b[^>]*>(.*?)<\/b>/gi,'**$1**')
-    .replace(/<em[^>]*>(.*?)<\/em>/gi,'*$1*')
-    .replace(/<i[^>]*>(.*?)<\/i>/gi,'*$1*')
-    .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi,'[$2]($1)')
-    .replace(/<li[^>]*>(.*?)<\/li>/gi,'- $1\n')
-    .replace(/<\/?(ul|ol|p|br)[^>]*>/gi,'\n')
-    .replace(/<[^>]+>/g,'')
-    .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
-    .replace(/\n{3,}/g,'\n\n').trim();
-}
-function mdToHtml(md){
+// Converter minimale solo per leggere articoli vecchi in Markdown — NON usare per scrivere
+function legacyMdToHtml(md){
   return md
     .replace(/^### (.+)$/gm,'<h3>$1</h3>')
     .replace(/^## (.+)$/gm,'<h2>$1</h2>')
@@ -305,6 +294,7 @@ function mdToHtml(md){
     .replace(/\*(.+?)\*/g,'<em>$1</em>')
     .replace(/\[(.+?)\]\((.+?)\)/g,'<a href="$2">$1</a>')
     .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/\n\n/g,'</p><p>')
     .replace(/\n/g,'<br>');
 }
 function showPage(id,btn){
@@ -461,7 +451,7 @@ function nuovoArticolo(){
   document.getElementById('msg-art').style.display='none';
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function buildMd(){
+function buildContent(){
   const titolo=document.getElementById('titolo').value.trim();
   const data=document.getElementById('data').value;
   const cat=document.getElementById('categorie').value;
@@ -474,10 +464,11 @@ function buildMd(){
   if(teaser)fm+=`header:\n  teaser: "${teaser}"\n`;
   if(cat)fm+=`categories:\n  - ${cat}\n`;
   if(tags.length)fm+=`tags:\n${tags.map(t=>`  - ${t}`).join('\n')}\n`;
+  // Corpo in HTML puro — Jekyll lo renderizza direttamente senza conversioni
   return fm+`---\n\n${corpo}`;
 }
 function anteprima(){
-  document.getElementById('preview-content').textContent=buildMd();
+  document.getElementById('preview-content').textContent=buildContent();
   document.getElementById('preview-box').style.display='block';
   document.getElementById('preview-box').scrollIntoView({behavior:'smooth'});
 }
@@ -509,6 +500,7 @@ async function modificaArticolo(path){
   if(catM)document.getElementById('categorie').value=catM[1].trim();
   const tagsM=(fm?fm[1]:'').match(/tags:\n([\s\S]*?)(?=\n\w|\n---)/);
   if(tagsM)document.getElementById('tags').value=tagsM[1].replace(/\s*-\s*/g,'').trim().split('\n').join(', ');
+  // Carica corpo: HTML diretto, niente conversioni
   setCorpo(body);
   window._editSha=data.sha;window._editPath=path;
   showMsg('msg-art','✏️ Articolo caricato — modifica e pubblica.','ok');
@@ -524,7 +516,7 @@ async function pubblica(){
   if(!corpo)return showMsg('msg-art','⚠️ Scrivi il contenuto!','err');
   const data=document.getElementById('data').value;
   const filename=window._editPath||`_posts/${data}-${slugify(titolo)}.md`;
-  const body={message:`${window._editSha?'Aggiorna':'Nuovo'} articolo: ${titolo}`,content:enc(buildMd())};
+  const body={message:`${window._editSha?'Aggiorna':'Nuovo'} articolo: ${titolo}`,content:enc(buildContent())};
   if(window._editSha)body.sha=window._editSha;
   showMsg('msg-art','⏳ Pubblicazione...','');
   try{
