@@ -85,9 +85,11 @@ Modificare solo navigation.yml per cambiare voci del menu.
 
 ## COSA NON FARE
 - Il sito live e' https://cialdecompatibili-netizen.github.io/ (senza /jekyll2).
-- Il CMS e' in /cms/ (NON /admin/). URL: https://cialdecompatibili-netizen.github.io/cms/
-- La cartella cms/ NON ha front matter Jekyll (niente ---) cosi' viene servita come file statico puro, senza cache CDN. Questo e' intenzionale e necessario.
-- NON spostare mai il CMS in admin/ o aggiungere front matter Jekyll a cms/index.html.
+- Il CMS e' in /admin/ E in /cms/ (entrambe attive). URL principale: https://cialdecompatibili-netizen.github.io/admin/
+- ENTRAMBE le cartelle admin/ e cms/ NON hanno front matter Jekyll (niente --- in cima al file).
+- Senza front matter, Jekyll le ignora e GitHub Pages le serve come file statici puri: le modifiche si vedono subito senza cache CDN.
+- Se si aggiunge front matter (---layout: none--- o simile) a questi file, Jekyll li processa e la CDN di GitHub li mette in cache per ore: le modifiche non si vedono. NON farlo mai.
+- Per verificare che le modifiche al CMS siano arrivate online: cambia un testo visibile (es. titolo in topbar), pusha con 2-PUBBLICA.bat, aspetta 60s, apri in finestra incognito.
 - Non creare nav custom dentro i layout -> doppio menu
 - Non creare footer custom dentro i layout -> doppio footer
 - Non installare Ruby/Jekyll localmente: GitHub Pages fa il build nel cloud.
@@ -100,6 +102,13 @@ Modificare solo navigation.yml per cambiare voci del menu.
 - Bat con errori "non riconosciuto": encoding non ASCII -> riscrivere ASCII puro
 - Build fallisce su GitHub: verificare front matter articolo e nome file _posts
 - Immagini non compaiono: percorso deve essere /assets/images/nome.jpg
+- CMS non aggiorna le modifiche online: causa quasi certamente il front matter Jekyll
+  in admin/index.html o cms/index.html. Sintomo: cambi il file, pushy, ma il sito
+  mostra ancora la versione vecchia anche in incognito dopo 2+ minuti.
+  SOLUZIONE: rimuovere COMPLETAMENTE il blocco --- front matter --- dal file HTML
+  del CMS. Il file deve iniziare direttamente con <!DOCTYPE html>, zero righe prima.
+  Con front matter assente, Jekyll non tocca il file e GitHub Pages lo serve
+  come statico puro senza cache CDN.
 
 ## PRIMA DI INIZIARE OGNI SESSIONE
 1. Leggi questo file, non chiedere "di che progetto si tratta"
