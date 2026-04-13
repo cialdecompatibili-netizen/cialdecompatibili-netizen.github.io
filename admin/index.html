@@ -479,7 +479,7 @@ async function pubblica(){
   if(!tok())return showMsg('msg-art','⚠️ Token mancante!','err');
   const titolo=document.getElementById('titolo').value.trim();
   const cat=document.getElementById('categorie').value;
-  const corpo=document.getElementById('corpo').value.trim();
+  const corpo=getCorpo().trim();
   if(!titolo)return showMsg('msg-art','⚠️ Inserisci un titolo!','err');
   if(!cat)return showMsg('msg-art','⚠️ Seleziona una categoria!','err');
   if(!corpo)return showMsg('msg-art','⚠️ Scrivi il contenuto!','err');
