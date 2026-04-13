@@ -130,12 +130,12 @@ Questa sezione viene aggiornata automaticamente da Claude ogni volta che si riso
 
 ---
 ### ARCHITETTURA HOME PAGE (stile WordPress)
-- _pages/home.md = la pagina home reale, modificabile dal CMS tab Pagine come tutte le altre
-- _pages/home.md ha layout: home e permalink: / — Jekyll la serve direttamente come homepage
-- _layouts/home.html = layout VUOTO con solo CSS+JS dello slider + {{ content }} — non contiene testi
-- index.html = file stub minimo con solo layout: home (Jekyll lo ignora perché home.md ha permalink: /)
-- Per cambiare home: creare/modificare _pages/home.md dal CMS → Pagine → home
-- NON rimettere contenuti dentro _layouts/home.html — deve restare solo struttura CSS+JS
+- _includes/home-content.html = il contenuto reale della home (slider, sezioni) — modificabile dal CMS
+- _layouts/home.html = layout con CSS+JS slider + {% include home-content.html %} — NON toccare
+- index.html = stub minimale con layout: home — NON toccare
+- CMS → Pagine → 🏠 home → Modifica → modifica HTML della home → Salva
+- salvaPagina() gestisce home-content.html come HTML puro (niente front matter)
+- _pages/home.md esiste ma NON è usata come home — ha permalink /home-page/ (ignorabile)
 
 - DOVE: Sidebar → ⚙️ Impostazioni
 - COSA SI PUÒ MODIFICARE: titolo sito, email, descrizione, nome autore, bio, avatar, social (Twitter/Instagram/GitHub/Website)
