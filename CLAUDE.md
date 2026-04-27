@@ -3,7 +3,6 @@ sito <https://cialdecompatibili-netizen.github.io/>
 # [CLAUDE.md](http://CLAUDE.md) — Jekyll + GitHub Pages (cialdecompatibili-netizen)
 
 # 💜 Ciao Mirco! Bentornato a casa. Questo è il tuo spazio, tutto sotto controllo.
-
 ## REGOLA: GIT AUTOMATICO
 
 - INIZIO sessione: NON fare pull automatico — è inutile nella maggior parte dei casi
@@ -13,7 +12,16 @@ sito <https://cialdecompatibili-netizen.github.io/>
 - NON toccare mai 2-PUBBLICA.bat e NON toccare mai 3-PULL.bat — sono di Mirco
 - SHELL: usare PowerShell con ; come separatore. Git è in PATH su PowerShell.
 
-## REGOLA: MODIFICHE CHIRURGICHE
+## REGOLA: RAGIONAMENTO PRIMA DI MODIFICARE CSS
+
+Prima di toccare qualsiasi CSS, Claude DEVE ragionare così:
+
+1. Dove vive il colore che voglio cambiare? (body? tema skin? componente specifico?)
+2. Minimal Mistakes ha layer multipli: skin (\_sass/minimal-mistakes/skins/) → componente (.masthead, .greedy-nav, .sidebar) → global (body)
+3. Sovrascrivere solo `body { background }` NON basta — ogni componente MM ha il suo background proprio
+4. La navbar = `.masthead` + `.masthead__inner-wrap` + `.greedy-nav` — tutti e tre vanno sovrascritti
+5. Usare SEMPRE `!important` per override su classi MM (il tema ha specificità alta)
+6. Verificare sempre la skin attuale in `_config.yml` → `minimal_mistakes_skin`
 
 - Usare SEMPRE edit_block con old_string/new_string invece di riscrivere file interi
 - Prima di scrivere codice nuovo: cercare se esiste già una funzione/soluzione riutilizzabile
@@ -24,7 +32,6 @@ sito <https://cialdecompatibili-netizen.github.io/>
 Ogni volta che si risolve un problema nuovo, Claude DEVE aggiornare questo file nella sezione "SOLUZIONI GIA' RISOLTE" con: sintomo, causa, soluzione esatta. Questo vale sempre, senza che l'utente lo chieda. E' parte del workflow standard.
 
 ## PROGETTO
-
 - Stack: Jekyll + tema Minimal Mistakes (remote_theme) + GitHub Pages
 - Repo: <https://github.com/cialdecompatibili-netizen/cialdecompatibili-netizen.github.io>
 - Sito live: <https://cialdecompatibili-netizen.github.io/>
