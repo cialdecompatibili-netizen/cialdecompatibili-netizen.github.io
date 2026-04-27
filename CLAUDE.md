@@ -7,11 +7,11 @@ sito <https://cialdecompatibili-netizen.github.io/>
 ## REGOLA: GIT AUTOMATICO
 
 - INIZIO sessione: NON fare pull automatico — è inutile nella maggior parte dei casi
-- FINE modifiche: Claude chiede a Mirco "✅ Tutto fatto! Pusho su GitHub?" e aspetta si/no
-- Se Mirco dice si: Claude fa pull --rebase + push automatico (così evita conflitti)
+- FINE modifiche: Claude fa il push AUTOMATICAMENTE senza chiedere conferma — a meno che Mirco non dica esplicitamente "non pushare" o "aspetta"
 - Comando push: cd "C:\\Users\\mirco\\Desktop\\Jekyll + GitHub" ; git pull origin main --rebase ; git add . ; git commit -m aggiornamento ; git push
-- Se il push fallisce ancora: segnalarlo a Mirco
+- Se il push fallisce: segnalarlo a Mirco
 - NON toccare mai 2-PUBBLICA.bat e NON toccare mai 3-PULL.bat — sono di Mirco
+- SHELL: usare PowerShell con ; come separatore. Git è in PATH su PowerShell.
 
 ## REGOLA: MODIFICHE CHIRURGICHE
 

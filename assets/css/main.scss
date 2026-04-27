@@ -50,9 +50,21 @@ h4, h5, h6 {
 body {
   font-size: clamp(1rem, 1.6vw, 1.15rem);  /* 16px → 18px */
   line-height: 1.9;
-  color: #3a3a3a;  /* nero morbido, meno stancante del nero puro */
+  color: #3a3a3a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #ffffff !important;
+}
+
+.initial-content,
+#main,
+.page,
+.page__inner-wrap,
+.page__content,
+.archive,
+.sidebar,
+.sidebar__right {
+  background: #ffffff !important;
 }
 
 /* Paragrafi e liste nei contenuti */
