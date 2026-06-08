@@ -3,6 +3,7 @@ sito <https://cialdecompatibili-netizen.github.io/>
 # [CLAUDE.md](http://CLAUDE.md) — Jekyll + GitHub Pages (cialdecompatibili-netizen)
 
 # 💜 Ciao Mirco! Bentornato a casa. Questo è il tuo spazio, tutto sotto controllo.
+
 ## REGOLA: GIT AUTOMATICO
 
 - INIZIO sessione: NON fare pull automatico — è inutile nella maggior parte dei casi
@@ -32,6 +33,7 @@ Prima di toccare qualsiasi CSS, Claude DEVE ragionare così:
 Ogni volta che si risolve un problema nuovo, Claude DEVE aggiornare questo file nella sezione "SOLUZIONI GIA' RISOLTE" con: sintomo, causa, soluzione esatta. Questo vale sempre, senza che l'utente lo chieda. E' parte del workflow standard.
 
 ## PROGETTO
+
 - Stack: Jekyll + tema Minimal Mistakes (remote_theme) + GitHub Pages
 - Repo: <https://github.com/cialdecompatibili-netizen/cialdecompatibili-netizen.github.io>
 - Sito live: <https://cialdecompatibili-netizen.github.io/>
