@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "arturo"
-permalink: /arturo
+permalink: /arturo/
 author_profile: true
 ---
 
