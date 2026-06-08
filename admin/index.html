@@ -167,6 +167,9 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
 
       <!-- VISTA LISTA -->
       <div id="pag-lista-view">
+        <div style="margin-bottom:16px">
+          <button class="btn btn-primary" onclick="apriNuovaPagina()">✚ Nuova pagina</button>
+        </div>
         <div class="card">
           <div class="card-title" style="display:flex;justify-content:space-between">Pagine del sito <button class="btn btn-secondary btn-sm" onclick="caricaPagine()">↻ Aggiorna</button></div>
           <div id="lista-pagine"><span style="color:#bbb;font-size:13px">Clicca ↻ per caricare</span></div>
@@ -180,6 +183,10 @@ textarea.sm{min-height:180px;font-family:'Courier New',monospace;font-size:13px;
         </div>
       <div class="card" id="editor-pagina">
         <div class="card-title">Modifica: <span id="nome-pagina" style="color:#6c63ff;text-transform:none"></span></div>
+        <div class="field" id="pag-permalink-field" style="display:none">
+          <label>Permalink (es. /contatti/)</label>
+          <input type="text" id="pag-permalink" placeholder="/nome-pagina/">
+        </div>
         <div class="field"><label>Titolo</label><input type="text" id="pag-titolo"></div>
         <div class="field">
           <label>Contenuto</label>
@@ -589,6 +596,7 @@ async function modificaPagina(path,sha){
   document.getElementById('pag-titolo').value=titleMatch?titleMatch[1].trim():'';
   setPagCorpo(corpo);
   document.getElementById('nome-pagina').textContent=path.split('/').pop();
+  document.getElementById('pag-permalink-field').style.display='none';
   document.getElementById('pag-lista-view').style.display='none';
   document.getElementById('pag-editor-view').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -597,18 +605,27 @@ async function salvaPagina(){
   if(!tok())return showMsg('msg-pag','⚠️ Token mancante.','err');
   const titolo=document.getElementById('pag-titolo').value.trim();
   const corpo=getPagCorpo();
-  let content;
-  // home-content.html = HTML puro, niente front matter
-  if(_paginaPath==='_includes/home-content.html'){
+  if(!titolo)return showMsg('msg-pag','⚠️ Inserisci un titolo!','err');
+  let content,filePath;
+  if(!_paginaPath){
+    // NUOVA PAGINA
+    const permalink=document.getElementById('pag-permalink').value.trim()||'/'+slugify(titolo)+'/';
+    const slug=permalink.replace(/\//g,'').replace(/\s+/g,'-');
+    if(!slug)return showMsg('msg-pag','⚠️ Inserisci un permalink!','err');
+    filePath=`_pages/${slug}.md`;
+    content=`---\nlayout: single\ntitle: "${titolo}"\npermalink: ${permalink.startsWith('/')?permalink:'/'+permalink}\nauthor_profile: true\n---\n\n${corpo}`;
+  } else if(_paginaPath==='_includes/home-content.html'){
+    filePath=_paginaPath;
     content=corpo;
   } else {
+    filePath=_paginaPath;
     const slug=_paginaPath.split('/').pop().replace('.md','');
     content=`---\nlayout: single\ntitle: "${titolo}"\npermalink: /${slug}/\nauthor_profile: true\n---\n\n${corpo}`;
   }
   showMsg('msg-pag','⏳ Salvataggio...','');
-  const res=await ghPut(_paginaPath,`Aggiorna pagina: ${titolo}`,content,_paginaSha);
+  const res=await ghPut(filePath,`${_paginaPath?'Aggiorna':'Crea'} pagina: ${titolo}`,content,_paginaSha||null);
   const j=await res.json();
-  if(res.ok){_paginaSha=j.content.sha;showMsg('msg-pag','✅ Salvata! Live in ~60s.','ok');}
+  if(res.ok){_paginaSha=j.content.sha;_paginaPath=filePath;showMsg('msg-pag','✅ Salvata! Live in ~60s.','ok');setTimeout(()=>tornaPagine(),1200);}
   else showMsg('msg-pag','❌ '+j.message,'err');
 }
 function anteprimaPagina(){
@@ -633,6 +650,20 @@ function tornaPagine(){
   document.getElementById('pag-editor-view').style.display='none';
   document.getElementById('pag-lista-view').style.display='block';
   document.getElementById('preview-pagina-box').style.display='none';
+}
+function apriNuovaPagina(){
+  _paginaPath=null;_paginaSha=null;
+  document.getElementById('pag-titolo').value='';
+  document.getElementById('pag-permalink').value='';
+  document.getElementById('pag-permalink-field').style.display='block';
+  document.getElementById('pag-vis-editor').innerHTML='';
+  document.getElementById('pag-corpo').value='';
+  document.getElementById('nome-pagina').textContent='Nuova pagina';
+  document.getElementById('msg-pag').style.display='none';
+  document.getElementById('preview-pagina-box').style.display='none';
+  document.getElementById('pag-lista-view').style.display='none';
+  document.getElementById('pag-editor-view').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 // ARTICOLI
 function slugify(s){return s.toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìí]/g,'i').replace(/[òó]/g,'o').replace(/[ùú]/g,'u').replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');}
